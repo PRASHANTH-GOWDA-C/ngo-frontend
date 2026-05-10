@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Active Campaigns — LuminaNGO</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e1511;
+    --surface: #161d19;
+    --surface-high: #1e2820;
+    --primary: #4edea3;
+    --primary-dark: #10b981;
+    --text: #dde4dd;
+    --text-muted: #bbcabf;
+    --border: #2a3530;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.25rem;
+  }
+  *, body { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+  a { text-decoration: none; color: inherit; }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: rgba(14,21,17,0.95);
+    backdrop-filter: blur(12px); z-index: 100;
+  }
+  .logo { font-size: 20px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 6px; }
+  .logo span { color: var(--text); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a { font-size: 13px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--text); border-bottom: 2px solid var(--primary); padding-bottom: 2px; }
+  .btn-outline { padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--primary); background: transparent; color: var(--primary); font-family: 'Inter', sans-serif; transition: all 0.2s; letter-spacing: 0.02em; }
+  .btn-outline:hover { background: var(--primary); color: #003824; }
+
+  .page-header { padding: 48px 40px 32px; max-width: 1280px; margin: 0 auto; display: flex; align-items: flex-end; justify-content: space-between; }
+  .overline { font-size: 11px; font-weight: 600; color: var(--primary); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+  .page-header h1 { font-size: 40px; font-weight: 700; letter-spacing: -0.02em; }
+  .filter-pill { display: flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+  .filter-pill:hover { border-color: var(--primary); color: var(--primary); }
+
+  .ngo-chips { max-width: 1280px; margin: 0 auto; padding: 0 40px 28px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip { padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); font-family: 'Inter', sans-serif; transition: all 0.2s; }
+  .chip:hover { border-color: rgba(78,222,163,0.4); color: var(--primary); }
+  .chip.active { background: rgba(78,222,163,0.1); border-color: var(--primary); color: var(--primary); }
+
+  .grid-section { max-width: 1280px; margin: 0 auto; padding: 0 40px 80px; }
+  .campaign-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s; cursor: pointer; }
+  .card:hover { border-color: rgba(78,222,163,0.35); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+
+  .card-img { position: relative; height: 190px; overflow: hidden; }
+  .card-img-bg { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 56px; transition: transform 0.4s ease; }
+  .card:hover .card-img-bg { transform: scale(1.06); }
+
+  .bg-water  { background: linear-gradient(145deg,#071826 0%,#0b2e24 50%,#071e30 100%); }
+  .bg-forest { background: linear-gradient(145deg,#071e0e 0%,#0d3016 50%,#0a2419 100%); }
+  .bg-tech   { background: linear-gradient(145deg,#0e0e1e 0%,#141430 50%,#0a1220 100%); }
+  .bg-health { background: linear-gradient(145deg,#200810 0%,#2e0c18 50%,#200a10 100%); }
+  .bg-energy { background: linear-gradient(145deg,#181808 0%,#242408 50%,#1a2208 100%); }
+  .bg-wild   { background: linear-gradient(145deg,#081e10 0%,#0c2e18 50%,#082214 100%); }
+
+  .card-badge { position: absolute; top: 14px; left: 14px; background: rgba(10,16,12,0.88); backdrop-filter: blur(8px); border: 1px solid rgba(78,222,163,0.3); color: var(--primary); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 999px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+  .ngo-label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; }
+  .card-title { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; margin-bottom: 14px; color: var(--text); flex: 1; }
+
+  .progress-row { display: flex; justify-content: space-between; font-size: 12px; font-weight: 500; margin-bottom: 8px; }
+  .pct-label { color: var(--primary); }
+  .raised-label { color: var(--text-muted); }
+  .progress-bar { height: 5px; background: #1a2820; border-radius: 999px; overflow: hidden; margin-bottom: 16px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); border-radius: 999px; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); min-width: 4px; }
+
+  .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  .meta-label { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; }
+  .meta-value { font-size: 15px; font-weight: 600; color: var(--text); }
+  .meta-item:last-child { text-align: right; }
+
+  .donate-btn { width: 100%; padding: 13px; background: var(--primary); color: #003824; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; letter-spacing: 0.06em; text-transform: uppercase; }
+  .donate-btn:hover { background: #6ffbbe; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(78,222,163,0.25); }
+
+  .skeleton { background: linear-gradient(90deg, var(--surface) 25%, var(--surface-high) 50%, var(--surface) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: var(--radius-xl); }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  .empty { grid-column: 1/-1; text-align: center; padding: 80px; color: var(--text-muted); }
+  .empty .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty h3 { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+
+  footer { border-top: 1px solid var(--border); padding: 36px 40px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-left p { font-size: 12px; color: var(--text-muted); max-width: 220px; line-height: 1.5; margin-top: 6px; }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a { font-size: 13px; color: var(--text-muted); transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+
+  @media (max-width: 900px) { .campaign-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; } .nav-links { display: none; }
+    .page-header { padding: 32px 20px 24px; flex-direction: column; gap: 16px; align-items: flex-start; }
+    .page-header h1 { font-size: 28px; }
+    .grid-section, .ngo-chips { padding-left: 20px; padding-right: 20px; }
+    .campaign-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 24px; padding: 32px 20px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Explore NGOs</a></li>
+    <li><a href="campaigns.html" class="active">Campaigns</a></li>
+    <li><a href="volunteer.html">Volunteer</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <button class="btn-outline" onclick="window.location='donate.html'">Donate Now</button>
+</nav>
+
+<div class="page-header">
+  <div>
+    <div class="overline">Ongoing Initiatives</div>
+    <h1>Active Campaigns</h1>
+  </div>
+  <button class="filter-pill">☰ Filter by Impact Area</button>
+</div>
+
+<div class="ngo-chips" id="ngo-chips">
+  <button class="chip active" data-ngo="all" onclick="filterByNGO('all',this)">All NGOs</button>
+</div>
+
+<div class="grid-section">
+  <div class="campaign-grid" id="campaign-grid">
+    <div style="height:430px" class="skeleton"></div>
+    <div style="height:430px" class="skeleton"></div>
+    <div style="height:430px" class="skeleton"></div>
+    <div style="height:430px" class="skeleton"></div>
+    <div style="height:430px" class="skeleton"></div>
+    <div style="height:430px" class="skeleton"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-left">
+    <div class="logo">✦ <span>Lumina</span>NGO</div>
+    <p>© 2025 LuminaNGO. Radical transparency in global philanthropy.</p>
+  </div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Global Impact</a>
+  </div>
+</footer>
+
+<script>
+const API = 'http://localhost:3000/api';
+const badges = ['VERIFIED','IMPACT LEADER','TRENDING','TOP RATED','FEATURED','NEW'];
+const bgs    = ['bg-water','bg-forest','bg-tech','bg-health','bg-energy','bg-wild'];
+const emojis = ['💧','🌱','💻','🏥','⚡','🦁'];
+const icons  = ['≡','△','◈','⊕','⚡','❋'];
+let allCampaigns = [];
+
+function formatINR(n) { return '₹' + parseFloat(n).toLocaleString('en-IN',{maximumFractionDigits:0}); }
+function formatDate(d) { return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
+
+function renderCards(list) {
+  const grid = document.getElementById('campaign-grid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty"><div class="icon">🌿</div><h3>No campaigns found</h3><p>Try selecting a different NGO.</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map((c,i) => {
+    const pct = c.goal_amount > 0 ? Math.min(Math.round((c.raised_amount/c.goal_amount)*100),100) : 0;
+    return `
+    <div class="card" onclick="window.location='donate.html?campaign_id=${c.campaign_id}'">
+      <div class="card-img">
+        <div class="card-img-bg ${bgs[i%bgs.length]}">${emojis[i%emojis.length]}</div>
+        <div class="card-badge">${badges[i%badges.length]}</div>
+      </div>
+      <div class="card-body">
+        <div class="ngo-label"><span>${icons[i%icons.length]}</span> ${c.ngo_name}</div>
+        <div class="card-title">${c.title}</div>
+        <div class="progress-row">
+          <span class="pct-label">${pct}% Funded</span>
+          <span class="raised-label">${formatINR(c.raised_amount)} Raised</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:0%" data-w="${pct}%"></div></div>
+        <div class="meta-row">
+          <div class="meta-item"><div class="meta-label">Goal</div><div class="meta-value">${formatINR(c.goal_amount)}</div></div>
+          <div class="meta-item"><div class="meta-label">Deadline</div><div class="meta-value">${formatDate(c.deadline)}</div></div>
+        </div>
+        <button class="donate-btn" onclick="event.stopPropagation();window.location='donate.html?campaign_id=${c.campaign_id}'">Donate Now</button>
+      </div>
+    </div>`;
+  }).join('');
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.progress-fill[data-w]').forEach(el => {
+      setTimeout(() => { el.style.width = el.dataset.w; }, 80);
+    });
+  });
+}
+
+function filterByNGO(ngo, btn) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards(ngo === 'all' ? allCampaigns : allCampaigns.filter(c => c.ngo_name === ngo));
+}
+
+async function load() {
+  try {
+    const res = await fetch(`${API}/campaigns`);
+    allCampaigns = await res.json();
+    const chips = document.getElementById('ngo-chips');
+    [...new Set(allCampaigns.map(c => c.ngo_name))].forEach(ngo => {
+      const btn = document.createElement('button');
+      btn.className = 'chip'; btn.dataset.ngo = ngo; btn.textContent = ngo;
+      btn.onclick = () => filterByNGO(ngo, btn);
+      chips.appendChild(btn);
+    });
+    const params = new URLSearchParams(window.location.search);
+    const ngoParam = params.get('ngo');
+    if (ngoParam) {
+      const matchBtn = [...document.querySelectorAll('.chip')].find(c => c.dataset.ngo === ngoParam);
+      if (matchBtn) { filterByNGO(ngoParam, matchBtn); return; }
+    }
+    renderCards(allCampaigns);
+  } catch(e) {
+    document.getElementById('campaign-grid').innerHTML =
+      '<div class="empty"><div class="icon">⚠️</div><h3>Backend not reachable</h3><p>Start your Node.js server on port 3000.</p></div>';
+  }
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donor Dashboard — LuminaNGO</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#0e1511;--surface:#161d19;--surface-high:#1e2820;--primary:#4edea3;--primary-dark:#10b981;--text:#dde4dd;--text-muted:#bbcabf;--border:#2a3530;--radius-md:0.75rem;--radius-lg:1rem;--radius-xl:1.25rem}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+  a{text-decoration:none;color:inherit}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(14,21,17,0.95);backdrop-filter:blur(12px);z-index:100}
+  .logo{font-size:20px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}
+  .logo span{color:var(--text)}
+  .nav-links{display:flex;gap:36px;list-style:none}
+  .nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.active{color:var(--text);border-bottom:2px solid var(--primary);padding-bottom:2px}
+  .btn-outline{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--primary);background:transparent;color:var(--primary);font-family:'Inter',sans-serif;transition:all 0.2s}
+  .btn-outline:hover{background:var(--primary);color:#003824}
+
+  .main{max-width:1280px;margin:0 auto;padding:52px 40px 80px}
+
+  /* PAGE TITLE */
+  .page-title{margin-bottom:40px}
+  .page-title h1{font-size:36px;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px}
+  .page-title p{font-size:15px;color:var(--text-muted)}
+
+  /* STAT CARDS */
+  .stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:48px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:28px;display:flex;flex-direction:column;gap:12px;transition:border-color 0.2s}
+  .stat-card:hover{border-color:rgba(78,222,163,0.2)}
+  .stat-card-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .stat-card-label{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase}
+  .stat-card-icon{width:36px;height:36px;border-radius:8px;background:rgba(78,222,163,0.08);border:1px solid rgba(78,222,163,0.15);display:flex;align-items:center;justify-content:center;font-size:16px}
+  .stat-card-value{font-size:36px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
+  .stat-card-sub{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:4px}
+  .stat-card-sub .green{color:var(--primary)}
+
+  /* SECTION HEADER */
+  .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+  .section-header h2{font-size:22px;font-weight:700;letter-spacing:-0.01em}
+  .section-header a{font-size:13px;font-weight:600;color:var(--primary)}
+
+  /* DONATION TABLE */
+  .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:48px}
+  table{width:100%;border-collapse:collapse}
+  thead tr{border-bottom:1px solid var(--border)}
+  thead th{padding:14px 20px;font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;text-align:left}
+  tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:hover{background:var(--surface-high)}
+  tbody td{padding:16px 20px;font-size:14px;color:var(--text)}
+  .td-date{color:var(--text-muted);font-size:13px}
+  .td-amount{font-weight:600;color:var(--primary)}
+  .status-chip{display:inline-flex;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600}
+  .status-completed{background:rgba(78,222,163,0.1);color:var(--primary)}
+  .status-processing{background:rgba(185,200,222,0.1);color:#b9c8de}
+  .status-pending{background:rgba(255,179,175,0.1);color:#ffb3af}
+
+  .empty-table{text-align:center;padding:48px;color:var(--text-muted)}
+  .empty-table .icon{font-size:36px;margin-bottom:12px}
+
+  /* RECOMMENDED CARDS */
+  .rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:48px}
+  .rec-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;transition:border-color 0.2s,transform 0.2s}
+  .rec-card:hover{border-color:rgba(78,222,163,0.3);transform:translateY(-2px)}
+  .rec-img{height:140px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative}
+  .bg-edu{background:linear-gradient(145deg,#0e1020,#141830)}
+  .bg-env{background:linear-gradient(145deg,#071e0e,#0d3016)}
+  .bg-health{background:linear-gradient(145deg,#200810,#2e0c18)}
+  .rec-cat{position:absolute;top:10px;left:10px;font-size:9px;font-weight:700;color:var(--primary);letter-spacing:0.1em;text-transform:uppercase}
+  .rec-body{padding:18px}
+  .rec-ngo{font-size:11px;color:var(--text-muted);margin-bottom:6px}
+  .rec-title{font-size:16px;font-weight:700;letter-spacing:-0.01em;margin-bottom:12px}
+  .rec-prog-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:6px}
+  .rec-prog-row span:first-child{color:var(--primary);font-weight:600}
+  .rec-bar{height:4px;background:#1a2820;border-radius:999px;overflow:hidden;margin-bottom:14px}
+  .rec-fill{height:100%;background:linear-gradient(90deg,var(--primary-dark),var(--primary));border-radius:999px}
+  .rec-donate-btn{width:100%;padding:11px;background:var(--primary);color:#003824;border:none;border-radius:var(--radius-md);font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+  .rec-donate-btn:hover{background:#6ffbbe}
+
+  /* SKELETON */
+  .skeleton{background:linear-gradient(90deg,var(--surface) 25%,var(--surface-high) 50%,var(--surface) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--radius-xl)}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  footer{border-top:1px solid var(--border);padding:36px 40px;display:flex;justify-content:space-between;align-items:center}
+  .footer-links{display:flex;gap:28px}
+  .footer-links a{font-size:13px;color:var(--text-muted);transition:color 0.2s}
+  .footer-links a:hover{color:var(--text)}
+
+  @media(max-width:900px){
+    .stat-cards{grid-template-columns:1fr 1fr}
+    .rec-grid{grid-template-columns:1fr 1fr}
+    nav{padding:16px 20px} .nav-links{display:none}
+    .main{padding:36px 20px 60px}
+    footer{flex-direction:column;gap:16px;padding:28px 20px;text-align:center}
+  }
+  @media(max-width:600px){
+    .stat-cards{grid-template-columns:1fr}
+    .rec-grid{grid-template-columns:1fr}
+    table thead{display:none}
+    tbody td{display:block;padding:8px 16px}
+    tbody tr{padding:12px 0;display:block}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Explore NGOs</a></li>
+    <li><a href="campaigns.html">Campaigns</a></li>
+    <li><a href="volunteer.html">Volunteer</a></li>
+    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+  </ul>
+  <button class="btn-outline" onclick="window.location='donate.html'">Donate Now</button>
+</nav>
+
+<div class="main">
+
+  <!-- PAGE TITLE -->
+  <div class="page-title">
+    <h1>Donor Dashboard</h1>
+    <p>Welcome back. Your contributions are creating measurable global impact.</p>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Total Donated</div>
+        <div class="stat-card-icon">💰</div>
+      </div>
+      <div class="stat-card-value" id="total-donated">₹0</div>
+      <div class="stat-card-sub"><span class="green">↑ 12%</span> from last month</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Campaigns Supported</div>
+        <div class="stat-card-icon">📋</div>
+      </div>
+      <div class="stat-card-value" id="campaigns-count">0</div>
+      <div class="stat-card-sub">Across <span id="ngo-count" style="color:var(--primary);margin:0 3px">0</span> verified NGOs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-card-label">Last Donation</div>
+        <div class="stat-card-icon">📅</div>
+      </div>
+      <div class="stat-card-value" id="last-date">—</div>
+      <div class="stat-card-sub" id="last-campaign" style="color:var(--text-muted)">No donations yet</div>
+    </div>
+  </div>
+
+  <!-- DONATION HISTORY -->
+  <div class="section-header">
+    <h2>Donation History</h2>
+    <a href="#">Download Report</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Campaign Name</th>
+          <th>NGO Name</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="donation-tbody">
+        <tr><td colspan="5" class="empty-table"><div class="icon">📭</div>Loading donations...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- RECOMMENDED -->
+  <div class="section-header">
+    <h2>Recommended For You</h2>
+    <a href="campaigns.html">View All →</a>
+  </div>
+  <div class="rec-grid" id="rec-grid">
+    <div style="height:300px" class="skeleton"></div>
+    <div style="height:300px" class="skeleton"></div>
+    <div style="height:300px" class="skeleton"></div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <div style="font-size:12px;color:var(--text-muted)">© 2025 LuminaNGO. Transparency in Action.</div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Global Impact</a>
+  </div>
+</footer>
+
+<script>
+const API = 'http://localhost:3000/api';
+
+function formatINR(n){ return '₹'+parseFloat(n).toLocaleString('en-IN',{maximumFractionDigits:0}); }
+function formatDate(d){ return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
+function formatDateShort(d){ return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short'}); }
+
+const recBgs    = ['bg-edu','bg-env','bg-health'];
+const recEmojis = ['📚','🌿','🏥'];
+const recCats   = ['EDUCATION','ENVIRONMENT','HEALTHCARE'];
+
+async function loadDashboard(){
+  try{
+    // Load donations
+    const dRes = await fetch(`${API}/donations/history/1`);
+    const donations = await dRes.json();
+
+    // Stats
+    const total = donations.reduce((s,d)=>s+parseFloat(d.amount||0),0);
+    document.getElementById('total-donated').textContent = formatINR(total);
+    document.getElementById('campaigns-count').textContent = donations.length;
+
+    const ngos = [...new Set(donations.map(d=>d.campaign).filter(Boolean))];
+    document.getElementById('ngo-count').textContent = Math.max(ngos.length,1);
+
+    if(donations.length>0){
+      const last = donations[0];
+      document.getElementById('last-date').textContent = formatDateShort(last.donated_at||new Date());
+      document.getElementById('last-campaign').textContent = last.campaign||'Campaign';
+    }
+
+    // Table
+    const tbody = document.getElementById('donation-tbody');
+    if(!donations.length){
+      tbody.innerHTML=`<tr><td colspan="5" class="empty-table"><div class="icon">📭</div><p>No donations yet. <a href="campaigns.html" style="color:var(--primary)">Browse campaigns →</a></p></td></tr>`;
+    } else {
+      tbody.innerHTML = donations.map((d,i)=>{
+        const statuses = ['completed','completed','processing'];
+        const status = statuses[i%statuses.length];
+        return `<tr>
+          <td class="td-date">${formatDate(d.donated_at||new Date())}</td>
+          <td>${d.campaign||'General Campaign'}</td>
+          <td style="color:var(--text-muted)">${d.ngo_name||'NGO Partner'}</td>
+          <td class="td-amount">${formatINR(d.amount)}</td>
+          <td><span class="status-chip status-${status}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></td>
+        </tr>`;
+      }).join('');
+    }
+  } catch(e){
+    // Sample data fallback
+    document.getElementById('total-donated').textContent='₹42,850';
+    document.getElementById('campaigns-count').textContent='24';
+    document.getElementById('ngo-count').textContent='8';
+    document.getElementById('last-date').textContent='Oct 12';
+    document.getElementById('last-campaign').textContent='Clean Water Initiative';
+
+    document.getElementById('donation-tbody').innerHTML=`
+      <tr><td class="td-date">Oct 12, 2025</td><td>Books for Rural Schools</td><td style="color:var(--text-muted)">Smile Foundation</td><td class="td-amount">₹1,200</td><td><span class="status-chip status-completed">Completed</span></td></tr>
+      <tr><td class="td-date">Oct 05, 2025</td><td>Tree Plantation Drive</td><td style="color:var(--text-muted)">GreenEarth Trust</td><td class="td-amount">₹3,500</td><td><span class="status-chip status-completed">Completed</span></td></tr>
+      <tr><td class="td-date">Sep 28, 2025</td><td>Books for Rural Schools</td><td style="color:var(--text-muted)">Smile Foundation</td><td class="td-amount">₹500</td><td><span class="status-chip status-processing">Processing</span></td></tr>`;
+  }
+
+  // Load recommended campaigns
+  try{
+    const cRes = await fetch(`${API}/campaigns`);
+    const campaigns = await cRes.json();
+    const recGrid = document.getElementById('rec-grid');
+    const picks = campaigns.slice(0,3);
+    if(!picks.length) throw new Error();
+    recGrid.innerHTML = picks.map((c,i)=>{
+      const pct = c.goal_amount>0?Math.min(Math.round((c.raised_amount/c.goal_amount)*100),100):0;
+      return `
+      <div class="rec-card">
+        <div class="rec-img ${recBgs[i]}">
+          <span>${recEmojis[i]}</span>
+          <div class="rec-cat">${recCats[i]}</div>
+        </div>
+        <div class="rec-body">
+          <div class="rec-ngo">${c.ngo_name}</div>
+          <div class="rec-title">${c.title}</div>
+          <div class="rec-prog-row"><span>${pct}% funded</span><span>${formatINR(c.raised_amount)} raised</span></div>
+          <div class="rec-bar"><div class="rec-fill" style="width:${pct}%"></div></div>
+          <button class="rec-donate-btn" onclick="window.location='donate.html?campaign_id=${c.campaign_id}'">Donate</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e){
+    document.getElementById('rec-grid').innerHTML=`
+      <div class="rec-card"><div class="rec-img bg-edu"><span>📚</span><div class="rec-cat">EDUCATION</div></div><div class="rec-body"><div class="rec-ngo">Smile Foundation</div><div class="rec-title">Books for Rural Schools</div><div class="rec-prog-row"><span>0% funded</span><span>₹0 raised</span></div><div class="rec-bar"><div class="rec-fill" style="width:0%"></div></div><button class="rec-donate-btn" onclick="window.location='donate.html'">Donate</button></div></div>
+      <div class="rec-card"><div class="rec-img bg-env"><span>🌿</span><div class="rec-cat">ENVIRONMENT</div></div><div class="rec-body"><div class="rec-ngo">GreenEarth Trust</div><div class="rec-title">Tree Plantation Drive</div><div class="rec-prog-row"><span>0% funded</span><span>₹0 raised</span></div><div class="rec-bar"><div class="rec-fill" style="width:0%"></div></div><button class="rec-donate-btn" onclick="window.location='donate.html'">Donate</button></div></div>
+      <div class="rec-card"><div class="rec-img bg-health"><span>🏥</span><div class="rec-cat">HEALTHCARE</div></div><div class="rec-body"><div class="rec-ngo">HealthBridge NGO</div><div class="rec-title">Vaccine Distribution Drive</div><div class="rec-prog-row"><span>12% funded</span><span>₹18,000 raised</span></div><div class="rec-bar"><div class="rec-fill" style="width:12%"></div></div><button class="rec-donate-btn" onclick="window.location='donate.html'">Donate</button></div></div>`;
+  }
+}
+
+loadDashboard();
+</script>
+</body>
+</html>

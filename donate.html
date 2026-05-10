@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Donation — LuminaNGO</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0e1511;--surface:#161d19;--surface-high:#1e2820;
+    --primary:#4edea3;--primary-dark:#10b981;
+    --text:#dde4dd;--text-muted:#bbcabf;--border:#2a3530;
+    --radius-md:0.75rem;--radius-lg:1rem;--radius-xl:1.25rem;
+  }
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+  a{text-decoration:none;color:inherit}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(14,21,17,0.95);backdrop-filter:blur(12px);z-index:100}
+  .logo{font-size:20px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}
+  .logo span{color:var(--text)}
+  .nav-links{display:flex;gap:36px;list-style:none}
+  .nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.active{color:var(--text);border-bottom:2px solid var(--primary);padding-bottom:2px}
+  .btn-outline{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--primary);background:transparent;color:var(--primary);font-family:'Inter',sans-serif;transition:all 0.2s}
+  .btn-outline:hover{background:var(--primary);color:#003824}
+
+  .main{max-width:1100px;margin:0 auto;padding:60px 40px 80px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+
+  /* LEFT — campaign info */
+  .campaign-panel{}
+  .camp-img{width:100%;height:260px;border-radius:var(--radius-xl);overflow:hidden;margin-bottom:24px;position:relative}
+  .camp-img-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:72px;background:linear-gradient(145deg,#071826 0%,#0b2e24 50%,#071e30 100%)}
+  .verified-tag{position:absolute;bottom:16px;left:16px;background:rgba(10,16,12,0.88);border:1px solid rgba(78,222,163,0.3);color:var(--primary);font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;letter-spacing:0.06em;display:flex;align-items:center;gap:5px}
+  .camp-title{font-size:36px;font-weight:700;letter-spacing:-0.02em;line-height:1.15;margin-bottom:8px}
+  .camp-ngo{font-size:15px;color:var(--primary);font-weight:500;margin-bottom:16px}
+  .camp-desc{font-size:14px;color:var(--text-muted);line-height:1.65;margin-bottom:24px}
+
+  .funding-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px}
+  .funding-top{display:flex;align-items:flex-end;gap:16px;margin-bottom:6px}
+  .raised-label{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px}
+  .raised-value{font-size:36px;font-weight:700;color:var(--text);letter-spacing:-0.02em}
+  .goal-group .goal-label{font-size:11px;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px}
+  .goal-value{font-size:18px;font-weight:600;color:var(--text-muted)}
+  .prog-bar{height:6px;background:#1a2820;border-radius:999px;overflow:hidden;margin:14px 0}
+  .prog-fill{height:100%;background:linear-gradient(90deg,var(--primary-dark),var(--primary));border-radius:999px;transition:width 1.2s ease}
+  .funding-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--text-muted)}
+  .funding-meta span{display:flex;align-items:center;gap:5px}
+
+  /* RIGHT — form */
+  .form-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:36px}
+  .form-title{font-size:28px;font-weight:700;letter-spacing:-0.01em;margin-bottom:6px}
+  .form-sub{font-size:14px;color:var(--text-muted);margin-bottom:28px;line-height:1.5}
+
+  .field{margin-bottom:20px}
+  .field label{display:block;font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:8px;letter-spacing:0.01em}
+  .field input,.field select{width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s}
+  .field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(78,222,163,0.08)}
+  .field input::placeholder{color:#4a5a52}
+  .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23bbcabf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px;cursor:pointer}
+  .field select option{background:var(--surface)}
+
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+  .amount-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+  .amt-btn{padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text-muted);font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;text-align:center}
+  .amt-btn:hover{border-color:var(--primary);color:var(--primary)}
+  .amt-btn.selected{background:rgba(78,222,163,0.1);border-color:var(--primary);color:var(--primary);font-weight:600}
+
+  .custom-amount{position:relative}
+  .custom-amount .rupee{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:14px;font-weight:500}
+  .custom-amount input{padding-left:28px}
+
+  .submit-btn{width:100%;padding:15px;background:var(--primary);color:#003824;border:none;border-radius:var(--radius-md);font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;letter-spacing:0.02em;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+  .submit-btn:hover{background:#6ffbbe;transform:translateY(-1px);box-shadow:0 6px 24px rgba(78,222,163,0.25)}
+
+  .secure-note{text-align:center;font-size:12px;color:var(--text-muted);margin-top:12px;display:flex;align-items:center;justify-content:center;gap:6px}
+
+  /* Success modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center}
+  .modal-overlay.show{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:48px 40px;text-align:center;max-width:400px;width:90%}
+  .modal-icon{font-size:56px;margin-bottom:20px}
+  .modal h2{font-size:24px;font-weight:700;margin-bottom:8px}
+  .modal p{font-size:14px;color:var(--text-muted);margin-bottom:28px;line-height:1.6}
+  .modal-btn{display:inline-block;padding:12px 28px;background:var(--primary);color:#003824;border-radius:var(--radius-md);font-weight:600;font-size:14px;cursor:pointer;border:none;font-family:'Inter',sans-serif}
+
+  footer{border-top:1px solid var(--border);padding:36px 40px;display:flex;justify-content:space-between;align-items:center}
+  .footer-links{display:flex;gap:28px}
+  .footer-links a{font-size:13px;color:var(--text-muted);transition:color 0.2s}
+  .footer-links a:hover{color:var(--text)}
+  .footer-copy{font-size:12px;color:var(--text-muted)}
+
+  @media(max-width:800px){
+    .main{grid-template-columns:1fr;padding:32px 20px 60px}
+    nav{padding:16px 20px} .nav-links{display:none}
+    footer{flex-direction:column;gap:16px;padding:28px 20px;text-align:center}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Explore NGOs</a></li>
+    <li><a href="campaigns.html">Campaigns</a></li>
+    <li><a href="volunteer.html">Volunteer</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <button class="btn-outline">Connect Wallet</button>
+</nav>
+
+<div class="main">
+  <!-- LEFT -->
+  <div class="campaign-panel">
+    <div class="camp-img">
+      <div class="camp-img-bg" id="camp-emoji">💧</div>
+      <div class="verified-tag">✦ Verified Campaign</div>
+    </div>
+    <div class="camp-title" id="camp-title">Loading campaign...</div>
+    <div class="camp-ngo" id="camp-ngo"></div>
+    <div class="camp-desc" id="camp-desc">This initiative focuses on creating sustainable impact for communities in need through verified, transparent fund management.</div>
+    <div class="funding-card">
+      <div class="raised-label">Raised So Far</div>
+      <div class="funding-top">
+        <div>
+          <div class="raised-value" id="raised-val">₹0</div>
+        </div>
+        <div class="goal-group">
+          <div class="goal-label">Goal Amount</div>
+          <div class="goal-value" id="goal-val">₹0</div>
+        </div>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="funding-meta">
+        <span>👥 <span id="donor-count">0</span> Donors</span>
+        <span>⏱ <span id="days-left">—</span> Days Remaining</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="form-panel">
+    <div class="form-title">Secure Donation</div>
+    <div class="form-sub">Your contribution is tracked for 100% radical transparency.</div>
+
+    <div class="field">
+      <label>Select Campaign Hub</label>
+      <select id="campaign-select">
+        <option value="">Loading campaigns...</option>
+      </select>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="donor-name" placeholder="John Doe">
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="donor-email" placeholder="john@example.com">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Donation Amount (INR)</label>
+      <div class="amount-grid">
+        <button class="amt-btn" onclick="selectAmt(this,'100')">₹100</button>
+        <button class="amt-btn" onclick="selectAmt(this,'500')">₹500</button>
+        <button class="amt-btn selected" onclick="selectAmt(this,'1000')">₹1000</button>
+        <button class="amt-btn" onclick="selectAmt(this,'5000')">₹5000</button>
+      </div>
+      <div class="custom-amount">
+        <span class="rupee">₹</span>
+        <input type="number" id="amount" placeholder="Enter custom amount" value="1000" oninput="clearAmtBtns()">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Phone Number (Optional)</label>
+      <input type="tel" id="donor-phone" placeholder="+91 00000 00000">
+    </div>
+
+    <button class="submit-btn" onclick="submitDonation()">
+      🔒 Complete Donation
+    </button>
+    <div class="secure-note">🔐 SSL Encrypted &amp; Verified</div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-icon">✅</div>
+    <h2>Donation Successful!</h2>
+    <p>Thank you for your contribution. Your donation has been recorded and will be tracked transparently.</p>
+    <button class="modal-btn" onclick="window.location='dashboard.html'">View Dashboard →</button>
+  </div>
+</div>
+
+<footer>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <div class="footer-copy">© 2025 LuminaNGO. Transparency in Action.</div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Global Impact</a>
+  </div>
+</footer>
+
+<script>
+const API = 'http://localhost:3000/api';
+let campaigns = [];
+let selectedCampaignId = null;
+
+const emojis = ['💧','🌱','💻','🏥','⚡','🦁'];
+const descs  = [
+  'Deploying sustainable solar-powered water filtration systems across major regions, providing permanent access to clean drinking water for thousands of residents.',
+  'Pioneering global reforestation through tree planting and carbon sequestration programs that restore ecosystems.',
+  'Equipping underfunded schools with digital libraries and high-speed internet access for the next generation.',
+  'Providing essential medical support and healthcare access to underserved communities worldwide.',
+  'Building renewable energy infrastructure for communities without reliable power access.',
+  'Protecting natural habitats and endangered species through conservation and community engagement.'
+];
+
+function formatINR(n){ return '₹'+parseFloat(n).toLocaleString('en-IN',{maximumFractionDigits:0}); }
+
+function selectAmt(btn, val){
+  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('amount').value = val;
+}
+function clearAmtBtns(){ document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('selected')); }
+
+function updateCampaignPanel(c, i){
+  document.getElementById('camp-title').textContent = c.title;
+  document.getElementById('camp-ngo').textContent   = c.ngo_name;
+  document.getElementById('camp-emoji').textContent  = emojis[i % emojis.length];
+  document.getElementById('camp-desc').textContent   = descs[i % descs.length];
+  document.getElementById('raised-val').textContent  = formatINR(c.raised_amount);
+  document.getElementById('goal-val').textContent    = formatINR(c.goal_amount);
+  const pct = c.goal_amount>0 ? Math.min(Math.round((c.raised_amount/c.goal_amount)*100),100):0;
+  setTimeout(()=>{ document.getElementById('prog-fill').style.width = pct+'%'; },100);
+  document.getElementById('donor-count').textContent = Math.floor(Math.random()*800+100);
+  const days = Math.max(0, Math.ceil((new Date(c.deadline)-new Date())/(1000*60*60*24)));
+  document.getElementById('days-left').textContent = days;
+  selectedCampaignId = c.campaign_id;
+}
+
+async function loadCampaigns(){
+  try{
+    const res = await fetch(`${API}/campaigns`);
+    campaigns = await res.json();
+    const sel = document.getElementById('campaign-select');
+    sel.innerHTML = campaigns.map((c,i)=>`<option value="${c.campaign_id}">${c.title} (${c.ngo_name})</option>`).join('');
+    sel.onchange = ()=>{
+      const i = campaigns.findIndex(c=>c.campaign_id==sel.value);
+      if(i>=0) updateCampaignPanel(campaigns[i],i);
+    };
+
+    // Pre-select from URL param
+    const params = new URLSearchParams(window.location.search);
+    const cid = params.get('campaign_id');
+    let idx = cid ? campaigns.findIndex(c=>c.campaign_id==cid) : 0;
+    if(idx<0) idx=0;
+    if(campaigns[idx]){
+      sel.value = campaigns[idx].campaign_id;
+      updateCampaignPanel(campaigns[idx], idx);
+    }
+  } catch(e){
+    document.getElementById('camp-title').textContent='Could not load campaign';
+  }
+}
+
+async function submitDonation(){
+  const name   = document.getElementById('donor-name').value.trim();
+  const email  = document.getElementById('donor-email').value.trim();
+  const amount = parseFloat(document.getElementById('amount').value);
+
+  if(!name){ alert('Please enter your name'); return; }
+  if(!email){ alert('Please enter your email'); return; }
+  if(!amount||amount<=0){ alert('Please enter a valid amount'); return; }
+  if(!selectedCampaignId){ alert('Please select a campaign'); return; }
+
+  // Check if donor exists, else create
+  let donor_id = 1;
+  try{
+    const dRes = await fetch(`${API}/donors`);
+    const donors = await dRes.json();
+    const existing = donors.find(d=>d.email===email);
+    if(existing){
+      donor_id = existing.donor_id;
+    } else {
+      const cRes = await fetch(`${API}/donors`,{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({name, email, phone: document.getElementById('donor-phone').value, type:'individual'})
+      });
+      const created = await cRes.json();
+      donor_id = created.id;
+    }
+
+    await fetch(`${API}/donations`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({donor_id, campaign_id: selectedCampaignId, amount})
+    });
+
+    document.getElementById('modal').classList.add('show');
+  } catch(e){
+    alert('Donation failed. Make sure the backend is running.');
+  }
+}
+
+loadCampaigns();
+</script>
+</body>
+</html>

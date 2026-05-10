@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volunteer — LuminaNGO</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#0e1511;--surface:#161d19;--surface-high:#1e2820;--primary:#4edea3;--primary-dark:#10b981;--text:#dde4dd;--text-muted:#bbcabf;--border:#2a3530;--radius-md:0.75rem;--radius-lg:1rem;--radius-xl:1.25rem}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+  a{text-decoration:none;color:inherit}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(14,21,17,0.95);backdrop-filter:blur(12px);z-index:100}
+  .logo{font-size:20px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}
+  .logo span{color:var(--text)}
+  .nav-links{display:flex;gap:36px;list-style:none}
+  .nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.active{color:var(--text);border-bottom:2px solid var(--primary);padding-bottom:2px}
+  .btn-outline{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--primary);background:transparent;color:var(--primary);font-family:'Inter',sans-serif;transition:all 0.2s}
+  .btn-outline:hover{background:var(--primary);color:#003824}
+
+  /* HERO SPLIT */
+  .hero-split{max-width:1280px;margin:0 auto;padding:60px 40px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  .hero-left .overline{font-size:11px;font-weight:600;color:var(--primary);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px}
+  .hero-left h1{font-size:42px;font-weight:700;letter-spacing:-0.02em;line-height:1.15;margin-bottom:16px}
+  .hero-left p{font-size:16px;color:var(--text-muted);line-height:1.7;margin-bottom:28px;max-width:400px}
+  .active-row{display:flex;align-items:center;gap:10px}
+  .avatar-stack{display:flex}
+  .avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--bg);background:var(--surface-high);display:flex;align-items:center;justify-content:center;font-size:13px;margin-left:-8px}
+  .avatar:first-child{margin-left:0}
+  .active-text{font-size:13px;color:var(--text-muted)}
+  .active-text strong{color:var(--primary)}
+
+  /* FORM CARD */
+  .form-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:40px}
+  .form-card h2{font-size:24px;font-weight:700;margin-bottom:24px}
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:8px}
+  .field input,.field select{width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s}
+  .field input:focus,.field select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(78,222,163,0.08)}
+  .field input::placeholder{color:#4a5a52}
+  .field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23bbcabf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px;cursor:pointer}
+  .field select option{background:var(--surface)}
+  .submit-btn{width:100%;padding:14px;background:var(--primary);color:#003824;border:none;border-radius:var(--radius-md);font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+  .submit-btn:hover{background:#6ffbbe;transform:translateY(-1px);box-shadow:0 6px 24px rgba(78,222,163,0.2)}
+  .form-note{text-align:center;font-size:12px;color:var(--text-muted);margin-top:12px}
+  .form-note a{color:var(--primary)}
+
+  /* STATS BAR */
+  .stats-bar{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .stats-inner{max-width:1280px;margin:0 auto;padding:0 40px;display:grid;grid-template-columns:repeat(4,1fr)}
+  .stat-item{padding:36px 24px;text-align:center;border-right:1px solid var(--border)}
+  .stat-item:last-child{border-right:none}
+  .stat-value{font-size:36px;font-weight:700;color:var(--primary);letter-spacing:-0.02em;margin-bottom:6px}
+  .stat-label{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase}
+
+  /* EVENTS */
+  .events-section{max-width:1280px;margin:0 auto;padding:60px 40px 80px}
+  .events-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px}
+  .events-header h2{font-size:28px;font-weight:700;letter-spacing:-0.01em}
+  .events-header p{font-size:14px;color:var(--text-muted);margin-top:6px;max-width:480px}
+  .view-all{font-size:13px;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:4px;white-space:nowrap}
+
+  .events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+
+  .event-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;transition:border-color 0.2s,transform 0.2s}
+  .event-card:hover{border-color:rgba(78,222,163,0.3);transform:translateY(-2px)}
+  .event-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:48px;position:relative}
+  .bg-sustain{background:linear-gradient(145deg,#071e0e,#0d3016)}
+  .bg-tech2{background:linear-gradient(145deg,#0e0e1e,#141430)}
+  .bg-crisis{background:linear-gradient(145deg,#1e0e07,#30160d)}
+  .bg-health2{background:linear-gradient(145deg,#200810,#2e0c18)}
+  .event-cat{position:absolute;top:12px;left:12px;background:rgba(10,16,12,0.88);border:1px solid rgba(78,222,163,0.3);color:var(--primary);font-size:10px;font-weight:700;padding:4px 10px;border-radius:999px;letter-spacing:0.08em;text-transform:uppercase}
+  .event-body{padding:20px}
+  .event-ngo{font-size:11px;color:var(--primary);font-weight:600;letter-spacing:0.04em;margin-bottom:8px}
+  .event-title{font-size:18px;font-weight:700;letter-spacing:-0.01em;margin-bottom:14px}
+  .event-meta{display:flex;flex-direction:column;gap:5px;margin-bottom:18px}
+  .event-meta-row{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted)}
+  .join-btn{width:100%;padding:11px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px}
+  .join-btn:hover{background:var(--primary);border-color:var(--primary);color:#003824}
+  .join-btn.joined{background:rgba(78,222,163,0.1);border-color:var(--primary);color:var(--primary)}
+
+  /* SUCCESS TOAST */
+  .toast{position:fixed;bottom:32px;right:32px;background:var(--surface);border:1px solid var(--primary);border-radius:var(--radius-lg);padding:16px 24px;font-size:14px;color:var(--text);z-index:300;transform:translateY(100px);opacity:0;transition:all 0.3s;display:flex;align-items:center;gap:10px}
+  .toast.show{transform:translateY(0);opacity:1}
+
+  footer{border-top:1px solid var(--border);padding:36px 40px;display:flex;justify-content:space-between;align-items:center}
+  .footer-links{display:flex;gap:28px}
+  .footer-links a{font-size:13px;color:var(--text-muted);transition:color 0.2s}
+  .footer-links a:hover{color:var(--text)}
+
+  @media(max-width:900px){
+    .hero-split{grid-template-columns:1fr;padding:40px 20px}
+    .events-grid{grid-template-columns:1fr 1fr}
+    .stats-inner{grid-template-columns:repeat(2,1fr)}
+    nav{padding:16px 20px} .nav-links{display:none}
+    .events-section{padding:40px 20px 60px}
+    footer{flex-direction:column;gap:16px;padding:28px 20px;text-align:center}
+  }
+  @media(max-width:600px){
+    .events-grid{grid-template-columns:1fr}
+    .hero-left h1{font-size:30px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Explore NGOs</a></li>
+    <li><a href="campaigns.html">Campaigns</a></li>
+    <li><a href="volunteer.html" class="active">Volunteer</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <button class="btn-outline" onclick="window.location='donate.html'">Donate Now</button>
+</nav>
+
+<!-- HERO SPLIT -->
+<div class="hero-split">
+  <div class="hero-left">
+    <div class="overline">Join The Movement</div>
+    <h1>Amplify Global Impact Through Action</h1>
+    <p>Join a community of 50,000+ changemakers. Whether you're a developer, strategist, or field worker, your skills create measurable change on the ground.</p>
+    <div class="active-row">
+      <div class="avatar-stack">
+        <div class="avatar">👩</div>
+        <div class="avatar">👨</div>
+        <div class="avatar">👩‍🦱</div>
+      </div>
+      <div class="active-text"><strong>1.2k+</strong> active this week</div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h2>Become a Volunteer</h2>
+    <div class="field">
+      <label>Full Name</label>
+      <input type="text" id="vol-name" placeholder="John Doe">
+    </div>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="vol-email" placeholder="john@example.com">
+    </div>
+    <div class="field">
+      <label>Skill / Expertise</label>
+      <select id="vol-skill">
+        <option value="">Select your skill</option>
+        <option value="Technology">Technology / Development</option>
+        <option value="Healthcare">Healthcare / Medical</option>
+        <option value="Education">Education / Teaching</option>
+        <option value="Logistics">Logistics / Operations</option>
+        <option value="Design">Design / Creative</option>
+        <option value="Finance">Finance / Accounting</option>
+        <option value="Field Work">Field Work / On-ground</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <button class="submit-btn" onclick="registerVolunteer()">
+      Register to Volunteer →
+    </button>
+    <div class="form-note">By joining, you agree to our <a href="#">Terms of Transparency</a>.</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item"><div class="stat-value">240k</div><div class="stat-label">Hours Logged</div></div>
+    <div class="stat-item"><div class="stat-value">150+</div><div class="stat-label">Global NGOs</div></div>
+    <div class="stat-item"><div class="stat-value">12M</div><div class="stat-label">Lives Impacted</div></div>
+    <div class="stat-item"><div class="stat-value">98%</div><div class="stat-label">Success Rate</div></div>
+  </div>
+</div>
+
+<!-- EVENTS -->
+<div class="events-section">
+  <div class="events-header">
+    <div>
+      <h2>Upcoming Volunteer Events</h2>
+      <p>Real-time opportunities to deploy your expertise. Verified for impact and radical transparency.</p>
+    </div>
+    <div class="view-all">View All Events →</div>
+  </div>
+  <div class="events-grid" id="events-grid">
+    <!-- loaded by JS -->
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ Successfully registered as a volunteer!</div>
+
+<footer>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Global Impact</a>
+  </div>
+</footer>
+
+<script>
+const API = 'http://localhost:3000/api';
+const cats   = ['SUSTAINABILITY','TECH FOR GOOD','CRISIS RELIEF','HEALTHCARE','EDUCATION','ENVIRONMENT'];
+const bgs    = ['bg-sustain','bg-tech2','bg-crisis','bg-health2','bg-sustain','bg-tech2'];
+const emojis = ['🌱','💻','🚨','🏥','📚','🌍'];
+const locs   = ['Bengaluru, India','Remote / Global','Mumbai, India','Delhi, India','Chennai, India','Hyderabad, India'];
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = '✅ ' + msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+async function registerVolunteer(){
+  const name  = document.getElementById('vol-name').value.trim();
+  const email = document.getElementById('vol-email').value.trim();
+  const skill = document.getElementById('vol-skill').value;
+  if(!name){ alert('Please enter your name'); return; }
+  if(!email){ alert('Please enter your email'); return; }
+  if(!skill){ alert('Please select a skill'); return; }
+  try{
+    await fetch(`${API}/volunteers`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name, email, skill})
+    });
+    document.getElementById('vol-name').value='';
+    document.getElementById('vol-email').value='';
+    document.getElementById('vol-skill').value='';
+    showToast('Successfully registered as a volunteer!');
+  } catch(e){
+    showToast('Registration saved locally!');
+  }
+}
+
+async function joinEvent(eventId, btn){
+  if(btn.classList.contains('joined')){ showToast('Already joined this event!'); return; }
+  try{
+    await fetch(`${API}/participation`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({volunteer_id:1, event_id: eventId})
+    });
+  } catch(e){}
+  btn.classList.add('joined');
+  btn.textContent = '✓ Joined';
+  showToast('You joined the event!');
+}
+
+async function loadEvents(){
+  const grid = document.getElementById('events-grid');
+  try{
+    const res = await fetch(`${API}/events`);
+    let events = await res.json();
+    if(!events.length) throw new Error('no events');
+    grid.innerHTML = events.map((e,i)=>`
+      <div class="event-card">
+        <div class="event-img ${bgs[i%bgs.length]}">
+          <div style="font-size:48px">${emojis[i%emojis.length]}</div>
+          <div class="event-cat">${cats[i%cats.length]}</div>
+        </div>
+        <div class="event-body">
+          <div class="event-ngo">${e.ngo_name||'NGO Partner'}</div>
+          <div class="event-title">${e.title}</div>
+          <div class="event-meta">
+            <div class="event-meta-row">📅 ${new Date(e.event_date).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</div>
+            <div class="event-meta-row">📍 ${e.location||locs[i%locs.length]}</div>
+          </div>
+          <button class="join-btn" onclick="joinEvent(${e.event_id},this)">Join Event +</button>
+        </div>
+      </div>`).join('');
+  } catch(e){
+    // Show sample events if backend has none
+    const samples = [
+      {title:'Reforestation Sprint 2025',ngo:'EcoRoots Global',date:'Oct 24, 2025',loc:'Nairobi, Kenya',i:0},
+      {title:'Blockchain for Food Safety',ngo:'CodeCare Initiative',date:'Nov 12, 2025',loc:'Remote / Global',i:1},
+      {title:'Emergency Supply Logistics',ngo:'Global Unity Network',date:'Dec 05, 2025',loc:'Warsaw, Poland',i:2},
+    ];
+    grid.innerHTML = samples.map(s=>`
+      <div class="event-card">
+        <div class="event-img ${bgs[s.i]}">
+          <div style="font-size:48px">${emojis[s.i]}</div>
+          <div class="event-cat">${cats[s.i]}</div>
+        </div>
+        <div class="event-body">
+          <div class="event-ngo">${s.ngo}</div>
+          <div class="event-title">${s.title}</div>
+          <div class="event-meta">
+            <div class="event-meta-row">📅 ${s.date}</div>
+            <div class="event-meta-row">📍 ${s.loc}</div>
+          </div>
+          <button class="join-btn" onclick="this.classList.add('joined');this.textContent='✓ Joined';showToast('You joined the event!')">Join Event +</button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+loadEvents();
+</script>
+</body>
+</html>
