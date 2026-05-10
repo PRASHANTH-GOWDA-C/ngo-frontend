@@ -23,6 +23,11 @@
     --radius-xl: 1.5rem;
   }
 
+  /* LIGHT MODE */
+  body.light{--bg:#f4f7f5;--surface:#ffffff;--surface-high:#edf2ef;--text:#1a2a22;--text-muted:#4a6358;--border:#ccddd5;}
+  body.light nav{background:rgba(244,247,245,0.95);}
+
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -441,6 +446,10 @@
     .chart-preview { padding: 0 20px; }
     footer { flex-direction: column; gap: 16px; text-align: center; }
   }
+
+  .theme-toggle{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+  .theme-toggle:hover{border-color:var(--primary);transform:scale(1.1);}
+
 </style>
 </head>
 <body>
@@ -456,6 +465,7 @@
   </ul>
   <div class="nav-actions">
     <a href="donate.html"><button class="btn btn-primary">Donate Now</button></a>
+    <button class="btn btn-primary" style="background:transparent;border:1px solid var(--border);color:var(--text-muted)" onclick="localStorage.clear();window.location='login.html'">Logout</button>
   </div>
 </nav>
 
@@ -551,6 +561,11 @@
 </footer>
 
 <script>
+// Redirect to login if not logged in
+if(!localStorage.getItem('loggedIn')){
+  window.location.href = 'login.html';
+}
+
 const API = 'http://localhost:3000/api';
 
 const emojis = ['🌱', '💧', '📚', '🏥', '🌍'];
@@ -629,5 +644,23 @@ async function loadNGOs() {
 
 loadNGOs();
 </script>
+
+<script>
+(function(){
+  var t = localStorage.getItem('theme');
+  if(t==='light') document.body.classList.add('light');
+})();
+function toggleTheme(){
+  var isLight = document.body.classList.toggle('light');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙';
+}
+// Set correct icon on load
+window.addEventListener('DOMContentLoaded',function(){
+  var btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
+});
+</script>
+
 </body>
 </html>

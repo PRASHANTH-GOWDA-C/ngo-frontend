@@ -20,6 +20,11 @@
     --radius-lg: 1rem;
     --radius-xl: 1.25rem;
   }
+
+  /* LIGHT MODE */
+  body.light{--bg:#f4f7f5;--surface:#ffffff;--surface-high:#edf2ef;--text:#1a2a22;--text-muted:#4a6358;--border:#ccddd5;}
+  body.light nav{background:rgba(244,247,245,0.95);}
+
   *, body { box-sizing: border-box; }
   body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
   a { text-decoration: none; color: inherit; }
@@ -109,6 +114,10 @@
     .campaign-grid { grid-template-columns: 1fr; }
     footer { flex-direction: column; gap: 24px; padding: 32px 20px; text-align: center; }
   }
+
+  .theme-toggle{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+  .theme-toggle:hover{border-color:var(--primary);transform:scale(1.1);}
+
 </style>
 </head>
 <body>
@@ -213,10 +222,25 @@ function filterByNGO(ngo, btn) {
   renderCards(ngo === 'all' ? allCampaigns : allCampaigns.filter(c => c.ngo_name === ngo));
 }
 
+async function fetchWithRetry(url, retries = 4, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Bad response');
+      return await res.json();
+    } catch(e) {
+      if (i < retries - 1) {
+        await new Promise(r => setTimeout(r, delay));
+      } else {
+        throw e;
+      }
+    }
+  }
+}
+
 async function load() {
   try {
-    const res = await fetch(`${API}/campaigns`);
-    allCampaigns = await res.json();
+    allCampaigns = await fetchWithRetry(`${API}/campaigns`);
     const chips = document.getElementById('ngo-chips');
     [...new Set(allCampaigns.map(c => c.ngo_name))].forEach(ngo => {
       const btn = document.createElement('button');
@@ -232,11 +256,37 @@ async function load() {
     }
     renderCards(allCampaigns);
   } catch(e) {
-    document.getElementById('campaign-grid').innerHTML =
-      '<div class="empty"><div class="icon">⚠️</div><h3>Backend not reachable</h3><p>Start your Node.js server on port 3000.</p></div>';
+    const grid = document.getElementById('campaign-grid');
+    grid.innerHTML = `
+      <div class="empty">
+        <div class="icon">⚠️</div>
+        <h3>Backend not reachable</h3>
+        <p>Make sure your Node.js server is running on port 3000.</p>
+        <button onclick="location.reload()" style="margin-top:20px;padding:10px 24px;background:var(--primary);color:#003824;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">
+          Retry
+        </button>
+      </div>`;
   }
 }
 load();
 </script>
+
+<script>
+(function(){
+  var t = localStorage.getItem('theme');
+  if(t==='light') document.body.classList.add('light');
+})();
+function toggleTheme(){
+  var isLight = document.body.classList.toggle('light');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙';
+}
+// Set correct icon on load
+window.addEventListener('DOMContentLoaded',function(){
+  var btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
+});
+</script>
+
 </body>
 </html>

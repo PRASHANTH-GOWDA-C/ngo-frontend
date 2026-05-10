@@ -8,6 +8,11 @@
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--bg:#0e1511;--surface:#161d19;--surface-high:#1e2820;--primary:#4edea3;--primary-dark:#10b981;--text:#dde4dd;--text-muted:#bbcabf;--border:#2a3530;--radius-md:0.75rem;--radius-lg:1rem;--radius-xl:1.25rem}
+
+  /* LIGHT MODE */
+  body.light{--bg:#f4f7f5;--surface:#ffffff;--surface-high:#edf2ef;--text:#1a2a22;--text-muted:#4a6358;--border:#ccddd5;}
+  body.light nav{background:rgba(244,247,245,0.95);}
+
   body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
   a{text-decoration:none;color:inherit}
 
@@ -90,6 +95,10 @@
     footer{flex-direction:column;gap:16px;padding:24px 20px;text-align:center}
   }
   @media(max-width:600px){.campaign-mini-grid{grid-template-columns:1fr}}
+
+  .theme-toggle{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+  .theme-toggle:hover{border-color:var(--primary);transform:scale(1.1);}
+
 </style>
 </head>
 <body>
@@ -280,5 +289,23 @@ async function loadProfile(){
 
 loadProfile();
 </script>
+
+<script>
+(function(){
+  var t = localStorage.getItem('theme');
+  if(t==='light') document.body.classList.add('light');
+})();
+function toggleTheme(){
+  var isLight = document.body.classList.toggle('light');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙';
+}
+// Set correct icon on load
+window.addEventListener('DOMContentLoaded',function(){
+  var btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
+});
+</script>
+
 </body>
 </html>

@@ -8,6 +8,11 @@
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--bg:#0e1511;--surface:#161d19;--surface-high:#1e2820;--primary:#4edea3;--primary-dark:#10b981;--text:#dde4dd;--text-muted:#bbcabf;--border:#2a3530;--radius-md:0.75rem;--radius-lg:1rem;--radius-xl:1.25rem}
+
+  /* LIGHT MODE */
+  body.light{--bg:#f4f7f5;--surface:#ffffff;--surface-high:#edf2ef;--text:#1a2a22;--text-muted:#4a6358;--border:#ccddd5;}
+  body.light nav{background:rgba(244,247,245,0.95);}
+
   body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
   a{text-decoration:none;color:inherit}
 
@@ -105,6 +110,10 @@
     tbody td{display:block;padding:8px 16px}
     tbody tr{padding:12px 0;display:block}
   }
+
+  .theme-toggle{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+  .theme-toggle:hover{border-color:var(--primary);transform:scale(1.1);}
+
 </style>
 </head>
 <body>
@@ -214,8 +223,8 @@ const recCats   = ['EDUCATION','ENVIRONMENT','HEALTHCARE'];
 
 async function loadDashboard(){
   try{
-    // Load donations
-    const dRes = await fetch(`${API}/donations/history/1`);
+    // Always fetch ALL donations (not hardcoded to donor 1)
+    const dRes = await fetch(`${API}/donations`);
     const donations = await dRes.json();
 
     // Stats
@@ -223,8 +232,8 @@ async function loadDashboard(){
     document.getElementById('total-donated').textContent = formatINR(total);
     document.getElementById('campaigns-count').textContent = donations.length;
 
-    const ngos = [...new Set(donations.map(d=>d.campaign).filter(Boolean))];
-    document.getElementById('ngo-count').textContent = Math.max(ngos.length,1);
+    const ngos = [...new Set(donations.map(d=>d.ngo_name).filter(Boolean))];
+    document.getElementById('ngo-count').textContent = ngos.length||1;
 
     if(donations.length>0){
       const last = donations[0];
@@ -250,17 +259,7 @@ async function loadDashboard(){
       }).join('');
     }
   } catch(e){
-    // Sample data fallback
-    document.getElementById('total-donated').textContent='₹42,850';
-    document.getElementById('campaigns-count').textContent='24';
-    document.getElementById('ngo-count').textContent='8';
-    document.getElementById('last-date').textContent='Oct 12';
-    document.getElementById('last-campaign').textContent='Clean Water Initiative';
-
-    document.getElementById('donation-tbody').innerHTML=`
-      <tr><td class="td-date">Oct 12, 2025</td><td>Books for Rural Schools</td><td style="color:var(--text-muted)">Smile Foundation</td><td class="td-amount">₹1,200</td><td><span class="status-chip status-completed">Completed</span></td></tr>
-      <tr><td class="td-date">Oct 05, 2025</td><td>Tree Plantation Drive</td><td style="color:var(--text-muted)">GreenEarth Trust</td><td class="td-amount">₹3,500</td><td><span class="status-chip status-completed">Completed</span></td></tr>
-      <tr><td class="td-date">Sep 28, 2025</td><td>Books for Rural Schools</td><td style="color:var(--text-muted)">Smile Foundation</td><td class="td-amount">₹500</td><td><span class="status-chip status-processing">Processing</span></td></tr>`;
+    console.error('Dashboard load error:', e);
   }
 
   // Load recommended campaigns
@@ -288,14 +287,31 @@ async function loadDashboard(){
       </div>`;
     }).join('');
   } catch(e){
-    document.getElementById('rec-grid').innerHTML=`
-      <div class="rec-card"><div class="rec-img bg-edu"><span>📚</span><div class="rec-cat">EDUCATION</div></div><div class="rec-body"><div class="rec-ngo">Smile Foundation</div><div class="rec-title">Books for Rural Schools</div><div class="rec-prog-row"><span>0% funded</span><span>₹0 raised</span></div><div class="rec-bar"><div class="rec-fill" style="width:0%"></div></div><button class="rec-donate-btn" onclick="window.location='donate.html'">Donate</button></div></div>
-      <div class="rec-card"><div class="rec-img bg-env"><span>🌿</span><div class="rec-cat">ENVIRONMENT</div></div><div class="rec-body"><div class="rec-ngo">GreenEarth Trust</div><div class="rec-title">Tree Plantation Drive</div><div class="rec-prog-row"><span>0% funded</span><span>₹0 raised</span></div><div class="rec-bar"><div class="rec-fill" style="width:0%"></div></div><button class="rec-donate-btn" onclick="window.location='donate.html'">Donate</button></div></div>
-      <div class="rec-card"><div class="rec-img bg-health"><span>🏥</span><div class="rec-cat">HEALTHCARE</div></div><div class="rec-body"><div class="rec-ngo">HealthBridge NGO</div><div class="rec-title">Vaccine Distribution Drive</div><div class="rec-prog-row"><span>12% funded</span><span>₹18,000 raised</span></div><div class="rec-bar"><div class="rec-fill" style="width:12%"></div></div><button class="rec-donate-btn" onclick="window.location='donate.html'">Donate</button></div></div>`;
+    console.error('Recommendations error:', e);
   }
 }
 
 loadDashboard();
+// Auto-refresh every 10 seconds so new donations show up
+setInterval(loadDashboard, 10000);
 </script>
+
+<script>
+(function(){
+  var t = localStorage.getItem('theme');
+  if(t==='light') document.body.classList.add('light');
+})();
+function toggleTheme(){
+  var isLight = document.body.classList.toggle('light');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙';
+}
+// Set correct icon on load
+window.addEventListener('DOMContentLoaded',function(){
+  var btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
+});
+</script>
+
 </body>
 </html>
