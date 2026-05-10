@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NGO Profile — LuminaNGO</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#0e1511;--surface:#161d19;--surface-high:#1e2820;--primary:#4edea3;--primary-dark:#10b981;--text:#dde4dd;--text-muted:#bbcabf;--border:#2a3530;--radius-md:0.75rem;--radius-lg:1rem;--radius-xl:1.25rem}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+  a{text-decoration:none;color:inherit}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(14,21,17,0.95);backdrop-filter:blur(12px);z-index:100}
+  .logo{font-size:20px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}
+  .logo span{color:var(--text)}
+  .nav-links{display:flex;gap:36px;list-style:none}
+  .nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s}
+  .nav-links a:hover{color:var(--text)}
+  .btn-outline{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--primary);background:transparent;color:var(--primary);font-family:'Inter',sans-serif;transition:all 0.2s}
+  .btn-outline:hover{background:var(--primary);color:#003824}
+
+  /* HERO BANNER */
+  .hero-banner{height:320px;position:relative;overflow:hidden;display:flex;align-items:flex-end}
+  .hero-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:120px}
+  .bg-forest{background:linear-gradient(145deg,#071e0e 0%,#0d3016 40%,#1a5c2a 100%)}
+  .bg-water{background:linear-gradient(145deg,#071826 0%,#0b2e24 40%,#0e4a3a 100%)}
+  .hero-overlay{position:absolute;inset:0;background:linear-gradient(to top, rgba(14,21,17,0.95) 0%, rgba(14,21,17,0.3) 60%, transparent 100%)}
+  .hero-content{position:relative;z-index:2;padding:32px 40px;width:100%}
+  .verified-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(78,222,163,0.15);border:1px solid rgba(78,222,163,0.3);color:var(--primary);font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;letter-spacing:0.06em;margin-bottom:12px}
+  .hero-content h1{font-size:40px;font-weight:700;letter-spacing:-0.02em;line-height:1.1;margin-bottom:8px}
+  .hero-content p{font-size:15px;color:var(--text-muted);max-width:480px}
+
+  /* MAIN LAYOUT */
+  .main{max-width:1280px;margin:0 auto;padding:48px 40px 80px;display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start}
+
+  /* LEFT */
+  .section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:32px;margin-bottom:28px}
+  .section-card h2{font-size:22px;font-weight:700;letter-spacing:-0.01em;margin-bottom:16px}
+  .section-card p{font-size:15px;color:var(--text-muted);line-height:1.75;margin-bottom:20px}
+  .section-card h3{font-size:17px;font-weight:600;margin-bottom:10px;margin-top:4px}
+
+  /* CAMPAIGNS */
+  .campaigns-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+  .campaigns-header h2{font-size:22px;font-weight:700}
+  .view-all-link{font-size:13px;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:4px}
+
+  .campaign-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .campaign-mini{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:border-color 0.2s,transform 0.2s}
+  .campaign-mini:hover{border-color:rgba(78,222,163,0.3);transform:translateY(-2px)}
+  .campaign-mini-img{height:120px;display:flex;align-items:center;justify-content:center;font-size:40px;position:relative}
+  .funded-badge{position:absolute;top:8px;right:8px;background:rgba(78,222,163,0.15);border:1px solid rgba(78,222,163,0.3);color:var(--primary);font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px}
+  .campaign-mini-body{padding:14px}
+  .campaign-mini-title{font-size:15px;font-weight:600;margin-bottom:8px;line-height:1.3}
+  .mini-prog-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:5px}
+  .mini-prog-bar{height:4px;background:#1a2820;border-radius:999px;overflow:hidden;margin-bottom:10px}
+  .mini-prog-fill{height:100%;background:linear-gradient(90deg,var(--primary-dark),var(--primary));border-radius:999px}
+  .mini-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:12px}
+  .donate-mini-btn{width:100%;padding:9px;background:var(--primary);color:#003824;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+  .donate-mini-btn:hover{background:#6ffbbe}
+
+  /* RIGHT SIDEBAR */
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:28px;margin-bottom:16px}
+  .stat-row{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .stat-icon{font-size:20px;width:40px;height:40px;border-radius:8px;background:rgba(78,222,163,0.08);border:1px solid rgba(78,222,163,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .stat-info .stat-value{font-size:32px;font-weight:700;color:var(--primary);letter-spacing:-0.02em;line-height:1}
+  .stat-info .stat-label{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-top:4px}
+
+  /* TEAM */
+  .team-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:28px}
+  .team-card h3{font-size:18px;font-weight:700;margin-bottom:20px}
+  .team-member{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .team-member:last-of-type{margin-bottom:20px}
+  .avatar{width:40px;height:40px;border-radius:50%;background:var(--surface-high);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .member-info .name{font-size:14px;font-weight:600}
+  .member-info .role{font-size:12px;color:var(--text-muted)}
+  .advisory-btn{width:100%;padding:11px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text-muted);font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+  .advisory-btn:hover{border-color:var(--primary);color:var(--primary)}
+
+  footer{border-top:1px solid var(--border);padding:32px 40px;display:flex;justify-content:space-between;align-items:center}
+  .footer-links{display:flex;gap:24px}
+  .footer-links a{font-size:13px;color:var(--text-muted);transition:color 0.2s}
+  .footer-links a:hover{color:var(--text)}
+
+  @media(max-width:900px){
+    .main{grid-template-columns:1fr}
+    .hero-content h1{font-size:28px}
+    nav{padding:16px 20px} .nav-links{display:none}
+    .main{padding:32px 20px 60px}
+    footer{flex-direction:column;gap:16px;padding:24px 20px;text-align:center}
+  }
+  @media(max-width:600px){.campaign-mini-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Explore NGOs</a></li>
+    <li><a href="campaigns.html">Campaigns</a></li>
+    <li><a href="volunteer.html">Volunteer</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <button class="btn-outline" onclick="window.location='donate.html'">Donate Now</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero-banner">
+  <div class="hero-bg bg-forest" id="ngo-bg">🌿</div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="verified-tag">✦ Verified NGO</div>
+    <h1 id="ngo-name">Loading NGO...</h1>
+    <p id="ngo-tagline">Pioneering radical transparency in global reforestation and carbon tracking since 2012.</p>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- LEFT -->
+  <div>
+    <div class="section-card">
+      <h2>Our Mission</h2>
+      <p id="ngo-mission">This NGO was founded on the principle that philanthropy should be as measurable as it is meaningful. We leverage technology to track every rupee from donation to impact, ensuring that when you fund a cause, you can see it grow.</p>
+      <h3>The Journey</h3>
+      <p>Starting from a small community initiative, we have expanded across multiple regions, partnering with local leaders and using data-driven approaches to verify our impact in real-time.</p>
+    </div>
+
+    <!-- CAMPAIGNS -->
+    <div class="section-card">
+      <div class="campaigns-header">
+        <h2>Active Campaigns</h2>
+        <a href="campaigns.html" class="view-all-link">View All →</a>
+      </div>
+      <div class="campaign-mini-grid" id="campaign-mini-grid">
+        <div style="height:200px;background:var(--surface-high);border-radius:var(--radius-lg);animation:shimmer 1.5s infinite"></div>
+        <div style="height:200px;background:var(--surface-high);border-radius:var(--radius-lg);animation:shimmer 1.5s infinite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div>
+    <!-- STATS -->
+    <div class="stat-card">
+      <div class="stat-row">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <div class="stat-value">2.4M+</div>
+          <div class="stat-label">Lives Impacted</div>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-icon">🌍</div>
+        <div class="stat-info">
+          <div class="stat-value" id="campaigns-count">0</div>
+          <div class="stat-label">Active Campaigns</div>
+        </div>
+      </div>
+      <div class="stat-row" style="margin-bottom:0">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-info">
+          <div class="stat-value" id="trust-score">8.5</div>
+          <div class="stat-label">Trust Score / 10</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM -->
+    <div class="team-card">
+      <h3>Meet the Team</h3>
+      <div class="team-member">
+        <div class="avatar">👩</div>
+        <div class="member-info">
+          <div class="name">Dr. Helena Vance</div>
+          <div class="role">Executive Director</div>
+        </div>
+      </div>
+      <div class="team-member">
+        <div class="avatar">👨</div>
+        <div class="member-info">
+          <div class="name">Marcus Thorne</div>
+          <div class="role">Head of Transparency</div>
+        </div>
+      </div>
+      <div class="team-member">
+        <div class="avatar">👩‍🦱</div>
+        <div class="member-info">
+          <div class="name">Sana Al-Farsi</div>
+          <div class="role">Community Lead</div>
+        </div>
+      </div>
+      <button class="advisory-btn">View Advisory Board</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <div style="font-size:12px;color:var(--text-muted)">© 2025 LuminaNGO. Transparency in Action.</div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#" style="color:var(--primary)">Global Impact</a>
+  </div>
+</footer>
+
+<style>
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+
+<script>
+const API = 'http://localhost:3000/api';
+const bgs    = ['bg-forest','bg-water','bg-forest'];
+const emojis = ['🌿','💧','📚','🏥','⚡'];
+const missions = [
+  'We were founded on the principle that philanthropy should be as measurable as it is meaningful. We leverage technology to track every rupee from donation to impact, ensuring full transparency.',
+  'Building sustainable water filtration systems across remote communities, providing permanent access to clean drinking water and reducing water-borne diseases by 70%.',
+  'Equipping underfunded schools with digital libraries and high-speed internet access, creating opportunities for the next generation of innovators.'
+];
+
+function formatINR(n){ return '₹'+parseFloat(n).toLocaleString('en-IN',{maximumFractionDigits:0}); }
+
+async function loadProfile(){
+  const params = new URLSearchParams(window.location.search);
+  const ngoName = params.get('ngo');
+
+  try{
+    const res = await fetch(`${API}/campaigns`);
+    const campaigns = await res.json();
+
+    let ngoCampaigns = campaigns;
+    let displayName = ngoName || campaigns[0]?.ngo_name || 'NGO Partner';
+
+    if(ngoName){
+      ngoCampaigns = campaigns.filter(c=>c.ngo_name===ngoName);
+      displayName = ngoName;
+    }
+
+    const idx = campaigns.findIndex(c=>c.ngo_name===displayName);
+    document.getElementById('ngo-name').textContent = displayName;
+    document.getElementById('campaigns-count').textContent = ngoCampaigns.length;
+
+    // Set bg
+    const bgEl = document.getElementById('ngo-bg');
+    bgEl.className = 'hero-bg ' + (bgs[idx%bgs.length]||'bg-forest');
+    bgEl.textContent = emojis[idx%emojis.length];
+    document.getElementById('ngo-mission').textContent = missions[idx%missions.length];
+    document.getElementById('trust-score').textContent = (7.5+Math.random()*2.4).toFixed(1);
+
+    // Render campaign cards
+    const grid = document.getElementById('campaign-mini-grid');
+    if(!ngoCampaigns.length){
+      grid.innerHTML='<p style="color:var(--text-muted);grid-column:1/-1">No active campaigns.</p>';
+      return;
+    }
+    grid.innerHTML = ngoCampaigns.map((c,i)=>{
+      const pct = c.goal_amount>0?Math.min(Math.round((c.raised_amount/c.goal_amount)*100),100):0;
+      const campEmojis=['🌱','💧','📚','🏥','⚡'];
+      const campBgs=['bg-forest','bg-water','bg-forest'];
+      return `
+      <div class="campaign-mini">
+        <div class="campaign-mini-img ${campBgs[i%campBgs.length]}">
+          <span>${campEmojis[i%campEmojis.length]}</span>
+          <div class="funded-badge">${pct}% Funded</div>
+        </div>
+        <div class="campaign-mini-body">
+          <div class="campaign-mini-title">${c.title}</div>
+          <div class="mini-prog-row"><span>${formatINR(c.raised_amount)} raised</span><span>of ${formatINR(c.goal_amount)}</span></div>
+          <div class="mini-prog-bar"><div class="mini-prog-fill" style="width:${pct}%"></div></div>
+          <button class="donate-mini-btn" onclick="window.location='donate.html?campaign_id=${c.campaign_id}'">Donate Now</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e){
+    document.getElementById('ngo-name').textContent = ngoName || 'NGO Partner';
+  }
+}
+
+loadProfile();
+</script>
+</body>
+</html>

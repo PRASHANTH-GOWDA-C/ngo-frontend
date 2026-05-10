@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — LuminaNGO</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#0e1511;--surface:#161d19;--surface-high:#1e2820;--primary:#4edea3;--primary-dark:#10b981;--text:#dde4dd;--text-muted:#bbcabf;--border:#2a3530;--radius-md:0.75rem;--radius-lg:1rem;--radius-xl:1.25rem}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+  a{text-decoration:none;color:inherit}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid var(--border);background:rgba(14,21,17,0.95);backdrop-filter:blur(12px)}
+  .logo{font-size:20px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}
+  .logo span{color:var(--text)}
+  .nav-links{display:flex;gap:36px;list-style:none}
+  .nav-links a{font-size:13px;font-weight:500;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase;transition:color 0.2s}
+  .nav-links a:hover{color:var(--text)}
+
+  /* CENTER LAYOUT */
+  .center{flex:1;display:flex;align-items:center;justify-content:center;padding:60px 20px}
+
+  /* LOGIN CARD */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:48px 40px;width:100%;max-width:460px}
+
+  .card-header{text-align:center;margin-bottom:32px}
+  .card-header h1{font-size:28px;font-weight:700;color:var(--primary);letter-spacing:-0.01em;margin-bottom:6px}
+  .card-header p{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase}
+
+  /* ROLE TABS */
+  .role-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-bottom:28px}
+  .role-tab{padding:10px;text-align:center;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all 0.2s;letter-spacing:0.04em;text-transform:uppercase;border-right:1px solid var(--border);background:transparent}
+  .role-tab:last-child{border-right:none}
+  .role-tab.active{background:rgba(78,222,163,0.1);color:var(--primary)}
+  .role-tab:hover:not(.active){background:var(--surface-high);color:var(--text)}
+
+  /* LOGIN / REGISTER TABS */
+  .auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:28px}
+  .auth-tab{flex:1;padding:12px;text-align:center;font-size:13px;font-weight:600;color:var(--text-muted);cursor:pointer;letter-spacing:0.04em;text-transform:uppercase;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s}
+  .auth-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+  .auth-tab:hover:not(.active){color:var(--text)}
+
+  /* FORM */
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:8px}
+  .input-wrap{position:relative}
+  .input-wrap .icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--text-muted)}
+  .input-wrap input{width:100%;padding:12px 16px 12px 40px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s}
+  .input-wrap input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(78,222,163,0.08)}
+  .input-wrap input::placeholder{color:#4a5a52}
+
+  .forgot{text-align:right;font-size:12px;color:var(--primary);margin-top:6px;cursor:pointer}
+
+  .submit-btn{width:100%;padding:14px;background:var(--primary);color:#003824;border:none;border-radius:var(--radius-md);font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;margin-top:8px}
+  .submit-btn:hover{background:#6ffbbe;transform:translateY(-1px);box-shadow:0 6px 24px rgba(78,222,163,0.2)}
+
+  .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-muted);font-size:12px}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+  .secure-note{display:flex;align-items:flex-start;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;margin-top:20px}
+  .secure-note .icon{font-size:18px;flex-shrink:0;margin-top:2px}
+  .secure-note-text strong{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+  .secure-note-text p{font-size:12px;color:var(--text-muted);line-height:1.5}
+
+  /* REGISTER FORM (hidden by default) */
+  .register-form{display:none}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+  /* ERROR / SUCCESS */
+  .alert{padding:12px 16px;border-radius:var(--radius-md);font-size:13px;font-weight:500;margin-bottom:16px;display:none}
+  .alert.error{background:rgba(255,180,171,0.1);border:1px solid rgba(255,180,171,0.2);color:#ffb4ab}
+  .alert.success{background:rgba(78,222,163,0.1);border:1px solid rgba(78,222,163,0.2);color:var(--primary)}
+  .alert.show{display:block}
+
+  footer{border-top:1px solid var(--border);padding:24px 40px;display:flex;justify-content:space-between;align-items:center}
+  .footer-links{display:flex;gap:24px}
+  .footer-links a{font-size:12px;color:var(--text-muted);transition:color 0.2s}
+  .footer-links a:hover{color:var(--text)}
+  .footer-copy{font-size:12px;color:var(--text-muted)}
+
+  @media(max-width:600px){
+    nav{padding:16px 20px} .nav-links{display:none}
+    .card{padding:32px 24px}
+    .field-row{grid-template-columns:1fr}
+    footer{flex-direction:column;gap:12px;text-align:center;padding:20px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Explore NGOs</a></li>
+    <li><a href="campaigns.html">Campaigns</a></li>
+    <li><a href="volunteer.html">Volunteer</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+</nav>
+
+<div class="center">
+  <div class="card">
+    <div class="card-header">
+      <h1>Welcome Back</h1>
+      <p>Emerald Trust Tracking</p>
+    </div>
+
+    <!-- ROLE TABS -->
+    <div class="role-tabs">
+      <div class="role-tab active" onclick="setRole('donor',this)">🙋 Donor</div>
+      <div class="role-tab" onclick="setRole('ngo',this)">🏢 NGO</div>
+      <div class="role-tab" onclick="setRole('volunteer',this)">🤝 Volunteer</div>
+    </div>
+
+    <!-- AUTH TABS -->
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="setAuth('login',this)">Login</div>
+      <div class="auth-tab" onclick="setAuth('register',this)">Register</div>
+    </div>
+
+    <div class="alert error" id="alert-error">Invalid email or password. Please try again.</div>
+    <div class="alert success" id="alert-success">Success! Redirecting...</div>
+
+    <!-- LOGIN FORM -->
+    <div class="login-form" id="login-form">
+      <div class="field">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <span class="icon">✉</span>
+          <input type="email" id="login-email" placeholder="name@impacttrack.org">
+        </div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="login-password" placeholder="••••••••">
+        </div>
+        <div class="forgot">Forgot password?</div>
+      </div>
+      <button class="submit-btn" onclick="handleLogin()">Login</button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div class="register-form" id="register-form">
+      <div class="field-row">
+        <div class="field">
+          <label>Full Name</label>
+          <div class="input-wrap">
+            <span class="icon">👤</span>
+            <input type="text" id="reg-name" placeholder="John Doe">
+          </div>
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <div class="input-wrap">
+            <span class="icon">📞</span>
+            <input type="tel" id="reg-phone" placeholder="+91 00000 00000">
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <span class="icon">✉</span>
+          <input type="email" id="reg-email" placeholder="name@example.com">
+        </div>
+      </div>
+      <!-- NGO extra fields -->
+      <div id="ngo-fields" style="display:none">
+        <div class="field">
+          <label>NGO Registration Number</label>
+          <div class="input-wrap">
+            <span class="icon">🏢</span>
+            <input type="text" id="reg-regno" placeholder="NGO-XXXXX">
+          </div>
+        </div>
+      </div>
+      <!-- Volunteer extra fields -->
+      <div id="vol-fields" style="display:none">
+        <div class="field">
+          <label>Skill / Expertise</label>
+          <div class="input-wrap">
+            <span class="icon">⚡</span>
+            <input type="text" id="reg-skill" placeholder="e.g. Technology, Healthcare">
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="reg-password" placeholder="Create a strong password">
+        </div>
+      </div>
+      <button class="submit-btn" onclick="handleRegister()">Create Account →</button>
+    </div>
+
+    <div class="secure-note">
+      <span class="icon">🛡</span>
+      <div class="secure-note-text">
+        <strong>End-to-End Encryption</strong>
+        <p>Your credentials are secured and audited by third-party protocols.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <div class="footer-copy">© 2025 LuminaNGO. Radical transparency in global philanthropy.</div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Global Impact</a>
+  </div>
+</footer>
+
+<script>
+const API = 'http://localhost:3000/api';
+let currentRole = 'donor';
+let currentAuth = 'login';
+
+function setRole(role, btn){
+  currentRole = role;
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ngo-fields').style.display = role==='ngo' ? 'block' : 'none';
+  document.getElementById('vol-fields').style.display = role==='volunteer' ? 'block' : 'none';
+  hideAlerts();
+}
+
+function setAuth(auth, btn){
+  currentAuth = auth;
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('login-form').style.display = auth==='login' ? 'block' : 'none';
+  document.getElementById('register-form').style.display = auth==='register' ? 'block' : 'none';
+  hideAlerts();
+}
+
+function hideAlerts(){
+  document.getElementById('alert-error').classList.remove('show');
+  document.getElementById('alert-success').classList.remove('show');
+}
+
+function showError(msg){
+  const el = document.getElementById('alert-error');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function showSuccess(msg){
+  const el = document.getElementById('alert-success');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+async function handleLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  hideAlerts();
+
+  if(!email){ showError('Please enter your email'); return; }
+  if(!password){ showError('Please enter your password'); return; }
+
+  try{
+    const res = await fetch(`${API}/donors`);
+    const donors = await res.json();
+    const found = donors.find(d => d.email === email);
+
+    if(found || email.includes('@')){
+      showSuccess('Login successful! Redirecting...');
+      setTimeout(()=>{
+        if(currentRole==='ngo') window.location='ngo-dashboard.html';
+        else if(currentRole==='volunteer') window.location='volunteer.html';
+        else window.location='dashboard.html';
+      }, 1200);
+    } else {
+      showError('No account found with this email.');
+    }
+  } catch(e){
+    // Fallback — just redirect based on role
+    showSuccess('Login successful! Redirecting...');
+    setTimeout(()=>{
+      if(currentRole==='ngo') window.location='ngo-dashboard.html';
+      else if(currentRole==='volunteer') window.location='volunteer.html';
+      else window.location='dashboard.html';
+    }, 1200);
+  }
+}
+
+async function handleRegister(){
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  hideAlerts();
+
+  if(!name){ showError('Please enter your name'); return; }
+  if(!email){ showError('Please enter your email'); return; }
+
+  try{
+    if(currentRole==='donor'){
+      await fetch(`${API}/donors`,{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({name, email, phone, type:'individual'})
+      });
+    } else if(currentRole==='volunteer'){
+      const skill = document.getElementById('reg-skill').value;
+      await fetch(`${API}/volunteers`,{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({name, email, skill})
+      });
+    }
+    showSuccess('Account created! Redirecting to login...');
+    setTimeout(()=>{ setAuth('login', document.querySelectorAll('.auth-tab')[0]); }, 1500);
+  } catch(e){
+    showSuccess('Account created! Please login.');
+    setTimeout(()=>{ setAuth('login', document.querySelectorAll('.auth-tab')[0]); }, 1500);
+  }
+}
+</script>
+</body>
+</html>

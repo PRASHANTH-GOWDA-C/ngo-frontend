@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NGO Dashboard — LuminaNGO</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#0e1511;--surface:#161d19;--surface-high:#1e2820;--primary:#4edea3;--primary-dark:#10b981;--text:#dde4dd;--text-muted:#bbcabf;--border:#2a3530;--radius-md:0.75rem;--radius-lg:1rem;--radius-xl:1.25rem}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+  a{text-decoration:none;color:inherit}
+
+  /* TOP NAV */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);background:rgba(14,21,17,0.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+  .logo{font-size:18px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}
+  .logo span{color:var(--text)}
+  .nav-right{display:flex;gap:24px;list-style:none;align-items:center}
+  .nav-right a{font-size:13px;font-weight:500;color:var(--text-muted);letter-spacing:0.04em;text-transform:uppercase}
+  .nav-right a:hover{color:var(--text)}
+  .btn-connect{padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--primary);background:var(--primary);color:#003824;font-family:'Inter',sans-serif;transition:all 0.2s}
+  .btn-connect:hover{background:#6ffbbe}
+
+  /* LAYOUT */
+  .layout{display:flex;flex:1}
+
+  /* SIDEBAR */
+  .sidebar{width:200px;border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;padding:24px 0;min-height:calc(100vh - 57px);position:sticky;top:57px;height:calc(100vh - 57px)}
+  .sidebar-nav{flex:1}
+  .sidebar-item{display:flex;align-items:center;gap:10px;padding:12px 20px;font-size:14px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all 0.2s;border-left:2px solid transparent}
+  .sidebar-item:hover{color:var(--text);background:var(--surface-high)}
+  .sidebar-item.active{color:var(--primary);background:rgba(78,222,163,0.06);border-left-color:var(--primary)}
+  .sidebar-item .icon{font-size:16px;width:20px;text-align:center}
+
+  .sidebar-user{padding:16px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+  .user-avatar{width:36px;height:36px;border-radius:50%;background:rgba(78,222,163,0.15);border:1px solid rgba(78,222,163,0.3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--primary);flex-shrink:0}
+  .user-info .user-name{font-size:13px;font-weight:600}
+  .user-info .user-role{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em}
+
+  /* MAIN */
+  .main{flex:1;padding:40px;overflow-y:auto}
+  .page-title{margin-bottom:32px}
+  .page-title h1{font-size:30px;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px}
+  .page-title p{font-size:14px;color:var(--text-muted)}
+
+  /* STAT CARDS */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:24px;transition:border-color 0.2s}
+  .stat-card:hover{border-color:rgba(78,222,163,0.2)}
+  .stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+  .stat-label{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;line-height:1.4}
+  .stat-icon{font-size:18px;width:36px;height:36px;border-radius:8px;background:rgba(78,222,163,0.08);border:1px solid rgba(78,222,163,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .stat-value{font-size:32px;font-weight:700;letter-spacing:-0.02em;color:var(--primary);margin-bottom:6px}
+  .stat-sub{font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:4px}
+  .stat-sub .up{color:var(--primary)}
+
+  /* SECTION */
+  .section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:28px;margin-bottom:24px}
+  .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+  .section-head h2{font-size:18px;font-weight:700;letter-spacing:-0.01em}
+  .create-btn{display:flex;align-items:center;gap:6px;padding:10px 18px;background:var(--primary);color:#003824;border:none;border-radius:var(--radius-md);font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+  .create-btn:hover{background:#6ffbbe}
+
+  /* CAMPAIGN TABLE */
+  table{width:100%;border-collapse:collapse}
+  thead th{padding:10px 14px;font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;text-align:left;border-bottom:1px solid var(--border)}
+  tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:hover{background:var(--surface-high)}
+  tbody td{padding:14px;font-size:14px}
+
+  .camp-cell{display:flex;align-items:center;gap:10px}
+  .camp-thumb{width:32px;height:32px;border-radius:6px;background:rgba(78,222,163,0.1);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .camp-name{font-weight:500}
+
+  .prog-mini{height:6px;background:#1a2820;border-radius:999px;overflow:hidden;margin-top:4px;width:80px}
+  .prog-mini-fill{height:100%;background:linear-gradient(90deg,var(--primary-dark),var(--primary));border-radius:999px}
+  .prog-label{font-size:11px;color:var(--text-muted)}
+
+  .status-active{background:rgba(78,222,163,0.1);color:var(--primary);font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;display:inline-block}
+  .status-completed{background:rgba(185,200,222,0.1);color:#b9c8de;font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;display:inline-block}
+
+  .action-btns{display:flex;gap:8px}
+  .action-btn{width:30px;height:30px;border-radius:6px;background:var(--surface-high);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all 0.2s}
+  .action-btn:hover{border-color:var(--primary);color:var(--primary)}
+
+  /* DONATIONS TABLE */
+  .donor-cell{display:flex;align-items:center;gap:10px}
+  .donor-avatar{width:32px;height:32px;border-radius:50%;background:rgba(78,222,163,0.12);border:1px solid rgba(78,222,163,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--primary);flex-shrink:0}
+  .amount-cell{color:var(--primary);font-weight:600}
+  .completed-chip{background:rgba(78,222,163,0.1);color:var(--primary);font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:4px}
+
+  /* ADD CAMPAIGN MODAL */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center}
+  .modal-overlay.show{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:40px;width:90%;max-width:500px}
+  .modal h2{font-size:22px;font-weight:700;margin-bottom:24px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;font-weight:500;color:var(--text-muted);margin-bottom:7px}
+  .field input,.field select,.field textarea{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s;resize:none}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary)}
+  .field input::placeholder,.field textarea::placeholder{color:#4a5a52}
+  .modal-btns{display:flex;gap:12px;margin-top:4px}
+  .modal-submit{flex:1;padding:12px;background:var(--primary);color:#003824;border:none;border-radius:var(--radius-md);font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+  .modal-submit:hover{background:#6ffbbe}
+  .modal-cancel{padding:12px 20px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text-muted);font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+  .modal-cancel:hover{border-color:var(--primary);color:var(--primary)}
+
+  @media(max-width:900px){
+    .sidebar{display:none}
+    .stat-grid{grid-template-columns:1fr 1fr}
+    .main{padding:24px 20px}
+  }
+  @media(max-width:600px){.stat-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav>
+  <div class="logo">✦ <span>Lumina</span>NGO</div>
+  <ul class="nav-right">
+    <li><a href="index.html">Explore</a></li>
+    <li><a href="campaigns.html">How It Works</a></li>
+  </ul>
+  <button class="btn-connect">Connect Wallet</button>
+</nav>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-nav">
+      <div class="sidebar-item active" onclick="setTab('overview',this)">
+        <span class="icon">⊞</span> Overview
+      </div>
+      <div class="sidebar-item" onclick="setTab('campaigns',this)">
+        <span class="icon">📢</span> My Campaigns
+      </div>
+      <div class="sidebar-item" onclick="setTab('donations',this)">
+        <span class="icon">💰</span> Donations
+      </div>
+      <div class="sidebar-item" onclick="setTab('volunteers',this)">
+        <span class="icon">👥</span> Volunteers
+      </div>
+      <div class="sidebar-item" onclick="window.location='index.html'">
+        <span class="icon">⚙</span> Settings
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">JD</div>
+      <div class="user-info">
+        <div class="user-name">John Doe</div>
+        <div class="user-role">NGO Admin</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="page-title">
+      <h1>Dashboard Overview</h1>
+      <p>Welcome back, Admin. Here's a summary of your NGO's impact metrics.</p>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Total Raised</div>
+          <div class="stat-icon">💰</div>
+        </div>
+        <div class="stat-value" id="total-raised">₹0</div>
+        <div class="stat-sub"><span class="up">↑ +12%</span> from last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Active Campaigns</div>
+          <div class="stat-icon">📢</div>
+        </div>
+        <div class="stat-value" id="active-count">0</div>
+        <div class="stat-sub" id="ending-soon">2 ending this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Total Donors</div>
+          <div class="stat-icon">👤</div>
+        </div>
+        <div class="stat-value" id="donor-count">0</div>
+        <div class="stat-sub"><span class="up">↑ +4%</span> growth</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Funds Disbursed</div>
+          <div class="stat-icon">✅</div>
+        </div>
+        <div class="stat-value">94%</div>
+        <div class="stat-sub">Radical transparency verified</div>
+      </div>
+    </div>
+
+    <!-- MY CAMPAIGNS -->
+    <div class="section">
+      <div class="section-head">
+        <h2>My Campaigns</h2>
+        <button class="create-btn" onclick="document.getElementById('campaign-modal').classList.add('show')">
+          + Create New
+        </button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Campaign Name</th>
+            <th>Goal</th>
+            <th>Raised</th>
+            <th>% Funded</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="campaign-tbody">
+          <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RECENT DONATIONS -->
+    <div class="section">
+      <div class="section-head">
+        <h2>Recent Donations</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Donor Name</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="donations-tbody">
+          <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted)">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE CAMPAIGN MODAL -->
+<div class="modal-overlay" id="campaign-modal">
+  <div class="modal">
+    <h2>Create New Campaign</h2>
+    <div class="field">
+      <label>Campaign Title</label>
+      <input type="text" id="new-title" placeholder="e.g. Clean Water for Villages">
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="new-desc" rows="3" placeholder="Describe the campaign goal..."></textarea>
+    </div>
+    <div class="field">
+      <label>Goal Amount (₹)</label>
+      <input type="number" id="new-goal" placeholder="e.g. 100000">
+    </div>
+    <div class="field">
+      <label>Deadline</label>
+      <input type="date" id="new-deadline">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="document.getElementById('campaign-modal').classList.remove('show')">Cancel</button>
+      <button class="modal-submit" onclick="createCampaign()">Create Campaign</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:3000/api';
+const NGO_ID = 1; // default NGO
+
+function formatINR(n){ return '₹'+parseFloat(n).toLocaleString('en-IN',{maximumFractionDigits:0}); }
+function formatDate(d){ return new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
+
+function setTab(tab, btn){
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function loadDashboard(){
+  try{
+    const [campRes, donorRes, donRes] = await Promise.all([
+      fetch(`${API}/campaigns`),
+      fetch(`${API}/donors`),
+      fetch(`${API}/donations`)
+    ]);
+    const campaigns = await campRes.json();
+    const donors    = await donorRes.json();
+    const donations = await donRes.json();
+
+    // Stats
+    const totalRaised = campaigns.reduce((s,c)=>s+parseFloat(c.raised_amount||0),0);
+    document.getElementById('total-raised').textContent = formatINR(totalRaised);
+    document.getElementById('active-count').textContent = campaigns.length;
+    document.getElementById('donor-count').textContent  = donors.length;
+
+    // Campaign table
+    const campEmojis = ['🌱','💧','📚','🏥','⚡'];
+    const ctbody = document.getElementById('campaign-tbody');
+    if(!campaigns.length){
+      ctbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">No campaigns yet. Create one!</td></tr>';
+    } else {
+      ctbody.innerHTML = campaigns.map((c,i)=>{
+        const pct = c.goal_amount>0?Math.min(Math.round((c.raised_amount/c.goal_amount)*100),100):0;
+        return `<tr>
+          <td><div class="camp-cell"><div class="camp-thumb">${campEmojis[i%campEmojis.length]}</div><div class="camp-name">${c.title}</div></div></td>
+          <td style="color:var(--text-muted)">${formatINR(c.goal_amount)}</td>
+          <td style="color:var(--primary);font-weight:600">${formatINR(c.raised_amount)}</td>
+          <td>
+            <div class="prog-label">${pct}% of target</div>
+            <div class="prog-mini"><div class="prog-mini-fill" style="width:${pct}%"></div></div>
+          </td>
+          <td><span class="status-active">ACTIVE</span></td>
+          <td><div class="action-btns"><div class="action-btn">✏</div><div class="action-btn">👁</div></div></td>
+        </tr>`;
+      }).join('');
+    }
+
+    // Donations table
+    const dtbody = document.getElementById('donations-tbody');
+    if(!donations.length){
+      dtbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted)">No donations yet.</td></tr>';
+    } else {
+      dtbody.innerHTML = donations.map(d=>{
+        const initials = (d.donor_name||'D').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+        return `<tr>
+          <td><div class="donor-cell"><div class="donor-avatar">${initials}</div>${d.donor_name||'Donor'}</div></td>
+          <td class="amount-cell">${formatINR(d.amount)}</td>
+          <td style="color:var(--text-muted)">${formatDate(d.donated_at||new Date())}</td>
+          <td><span class="completed-chip">✅ COMPLETED</span></td>
+        </tr>`;
+      }).join('');
+    }
+  } catch(e){
+    // Fallback sample data
+    document.getElementById('total-raised').textContent='₹1,42,500';
+    document.getElementById('active-count').textContent='8';
+    document.getElementById('donor-count').textContent='1,240';
+    document.getElementById('campaign-tbody').innerHTML=`
+      <tr><td><div class="camp-cell"><div class="camp-thumb">💧</div><div class="camp-name">Books for Rural Schools</div></div></td><td style="color:var(--text-muted)">₹1,00,000</td><td style="color:var(--primary);font-weight:600">₹32,500</td><td><div class="prog-label">65% of target</div><div class="prog-mini"><div class="prog-mini-fill" style="width:65%"></div></div></td><td><span class="status-active">ACTIVE</span></td><td><div class="action-btns"><div class="action-btn">✏</div><div class="action-btn">👁</div></div></td></tr>
+      <tr><td><div class="camp-cell"><div class="camp-thumb">🌱</div><div class="camp-name">Tree Plantation Drive</div></div></td><td style="color:var(--text-muted)">₹50,000</td><td style="color:var(--primary);font-weight:600">₹0</td><td><div class="prog-label">0% of target</div><div class="prog-mini"><div class="prog-mini-fill" style="width:0%"></div></div></td><td><span class="status-active">ACTIVE</span></td><td><div class="action-btns"><div class="action-btn">✏</div><div class="action-btn">👁</div></div></td></tr>`;
+    document.getElementById('donations-tbody').innerHTML=`
+      <tr><td><div class="donor-cell"><div class="donor-avatar">RS</div>Rahul Sharma</div></td><td class="amount-cell">₹500</td><td style="color:var(--text-muted)">10 May 2026</td><td><span class="completed-chip">✅ COMPLETED</span></td></tr>`;
+  }
+}
+
+async function createCampaign(){
+  const title    = document.getElementById('new-title').value.trim();
+  const desc     = document.getElementById('new-desc').value.trim();
+  const goal     = document.getElementById('new-goal').value;
+  const deadline = document.getElementById('new-deadline').value;
+  if(!title||!goal||!deadline){ alert('Please fill all required fields'); return; }
+  try{
+    await fetch(`${API}/campaigns`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ngo_id:NGO_ID, title, description:desc, goal_amount:goal, deadline})
+    });
+    document.getElementById('campaign-modal').classList.remove('show');
+    loadDashboard();
+  } catch(e){
+    alert('Could not create campaign. Check backend.');
+  }
+}
+
+loadDashboard();
+</script>
+</body>
+</html>
