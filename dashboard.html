@@ -191,7 +191,12 @@
   <!-- DONATION HISTORY -->
   <div class="section-header">
     <h2>Donation History</h2>
-    <a href="#">Download Report</a>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <select id="campaign-filter" onchange="filterByCampaign()" style="background:var(--surface-card);color:var(--text-primary);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-family:inherit;cursor:pointer;outline:none;">
+        <option value="all">All Campaigns</option>
+      </select>
+      <a href="#">Download Report</a>
+    </div>
   </div>
   <div class="table-wrap">
     <table>
@@ -244,43 +249,68 @@ const recBgs    = ['bg-edu','bg-env','bg-health'];
 const recEmojis = ['📚','🌿','🏥'];
 const recCats   = ['EDUCATION','ENVIRONMENT','HEALTHCARE'];
 
+let allDonations = [];
+
+function renderTable(donations){
+  const tbody = document.getElementById('donation-tbody');
+  if(!donations.length){
+    tbody.innerHTML=`<tr><td colspan="5" class="empty-table"><div class="icon">📭</div><p>No donations yet. <a href="campaigns.html" style="color:var(--primary)">Browse campaigns →</a></p></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = donations.map((d,i)=>{
+    const statuses = ['completed','completed','processing'];
+    const status = statuses[i%statuses.length];
+    return `<tr>
+      <td class="td-date">${formatDate(d.donated_at||new Date())}</td>
+      <td>${d.campaign||'General Campaign'}</td>
+      <td style="color:var(--text-muted)">${d.ngo_name||'NGO Partner'}</td>
+      <td class="td-amount">${formatINR(d.amount)}</td>
+      <td><span class="status-chip status-${status}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateStats(donations){
+  const total = donations.reduce((s,d)=>s+parseFloat(d.amount||0),0);
+  document.getElementById('total-donated').textContent = formatINR(total);
+  document.getElementById('campaigns-count').textContent = donations.length;
+  const ngos = [...new Set(donations.map(d=>d.ngo_name).filter(Boolean))];
+  document.getElementById('ngo-count').textContent = ngos.length||0;
+  if(donations.length>0){
+    const last = donations[0];
+    document.getElementById('last-date').textContent = formatDateShort(last.donated_at||new Date());
+    document.getElementById('last-campaign').textContent = last.campaign||'Campaign';
+  }
+}
+
+function filterByCampaign(){
+  const val = document.getElementById('campaign-filter').value;
+  const filtered = val==='all' ? allDonations : allDonations.filter(d=>d.campaign===val);
+  renderTable(filtered);
+  updateStats(filtered);
+}
+
 async function loadDashboard(){
   try{
-    // Always fetch ALL donations (not hardcoded to donor 1)
     const dRes = await fetch(`${API}/donations`);
-    const donations = await dRes.json();
+    allDonations = await dRes.json();
 
-    // Stats
-    const total = donations.reduce((s,d)=>s+parseFloat(d.amount||0),0);
-    document.getElementById('total-donated').textContent = formatINR(total);
-    document.getElementById('campaigns-count').textContent = donations.length;
-
-    const ngos = [...new Set(donations.map(d=>d.ngo_name).filter(Boolean))];
-    document.getElementById('ngo-count').textContent = ngos.length||1;
-
-    if(donations.length>0){
-      const last = donations[0];
-      document.getElementById('last-date').textContent = formatDateShort(last.donated_at||new Date());
-      document.getElementById('last-campaign').textContent = last.campaign||'Campaign';
+    // Populate campaign dropdown from /api/campaigns (all campaigns, not just donated ones)
+    const select = document.getElementById('campaign-filter');
+    try {
+      const cRes = await fetch(`${API}/campaigns`);
+      const allCampaigns = await cRes.json();
+      select.innerHTML = '<option value="all">All Campaigns</option>' +
+        allCampaigns.map(c=>`<option value="${c.title}">${c.title}</option>`).join('');
+    } catch(e) {
+      // fallback to donations-based list
+      const campaigns = [...new Set(allDonations.map(d=>d.campaign).filter(Boolean))];
+      select.innerHTML = '<option value="all">All Campaigns</option>' +
+        campaigns.map(c=>`<option value="${c}">${c}</option>`).join('');
     }
 
-    // Table
-    const tbody = document.getElementById('donation-tbody');
-    if(!donations.length){
-      tbody.innerHTML=`<tr><td colspan="5" class="empty-table"><div class="icon">📭</div><p>No donations yet. <a href="campaigns.html" style="color:var(--primary)">Browse campaigns →</a></p></td></tr>`;
-    } else {
-      tbody.innerHTML = donations.map((d,i)=>{
-        const statuses = ['completed','completed','processing'];
-        const status = statuses[i%statuses.length];
-        return `<tr>
-          <td class="td-date">${formatDate(d.donated_at||new Date())}</td>
-          <td>${d.campaign||'General Campaign'}</td>
-          <td style="color:var(--text-muted)">${d.ngo_name||'NGO Partner'}</td>
-          <td class="td-amount">${formatINR(d.amount)}</td>
-          <td><span class="status-chip status-${status}">${status.charAt(0).toUpperCase()+status.slice(1)}</span></td>
-        </tr>`;
-      }).join('');
-    }
+    updateStats(allDonations);
+    renderTable(allDonations);
   } catch(e){
     console.error('Dashboard load error:', e);
   }
