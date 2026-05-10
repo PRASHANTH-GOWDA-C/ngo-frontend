@@ -24,7 +24,29 @@
   }
 
   /* LIGHT MODE */
-  body.light{--bg:#f4f7f5;--surface:#ffffff;--surface-high:#edf2ef;--text:#1a2a22;--text-muted:#4a6358;--border:#ccddd5;}
+  body.light{
+    --bg:#F4FBF4;
+    --surface:#FFFFFF;
+    --surface-high:#EEF6EE;
+    --primary:#10B981;
+    --primary-dark:#059669;
+    --text:#050505;
+    --text-muted:#44474E;
+    --border:#74777F;
+  }
+  body.light nav{background:rgba(244,251,244,0.97);}
+  body.light .progress-bar,body.light .rec-bar,body.light .mini-prog-bar{background:#D1FAE5;}
+  body.light .card,body.light .stat-card,body.light .rec-card,body.light .section-card,body.light .table-wrap,body.light .team-card{background:#FFFFFF;border-color:#74777F;}
+  body.light tbody tr:hover{background:#EEF6EE;}
+  body.light .chip{border-color:#74777F;color:#44474E;}
+  body.light .chip.active{background:#D1FAE5;border-color:#10B981;color:#059669;}
+  body.light .donate-btn,body.light .rec-donate-btn,body.light .submit-btn,body.light .donate-mini-btn{background:#10B981;color:#FFFFFF;}
+  body.light .donate-btn:hover,body.light .rec-donate-btn:hover{background:#059669;}
+  body.light input{background:#F4FBF4;color:#050505;border-color:#74777F;}
+  body.light .secure-note{background:#EEF6EE;border-color:#74777F;}
+  body.light .card-badge{background:rgba(255,255,255,0.9);color:#059669;}
+  body.light .status-completed{background:#D1FAE5;color:#059669;}
+  body.light .status-processing{background:#EEF6EE;color:#44474E;}
   body.light nav{background:rgba(244,247,245,0.95);}
 
 
@@ -464,6 +486,7 @@
     <li><a href="dashboard.html">Dashboard</a></li>
   </ul>
   <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle light/dark mode">🌙</button>
     <a href="donate.html"><button class="btn btn-primary">Donate Now</button></a>
     <button class="btn btn-primary" style="background:transparent;border:1px solid var(--border);color:var(--text-muted)" onclick="localStorage.clear();window.location='login.html'">Logout</button>
   </div>
