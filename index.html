@@ -265,7 +265,14 @@
     gap: 24px;
   }
 
-  .ngo-card {
+  @keyframes cardEntrance {
+    0%   { opacity: 0; transform: translateY(40px) scale(0.95); }
+    60%  { opacity: 1; transform: translateY(-6px) scale(1.01); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+    .ngo-card {
+    opacity: 0;
+    animation: cardEntrance 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
@@ -632,7 +639,7 @@ async function loadNGOs() {
     grid.innerHTML = '';
 
     let totalRaised = 0;
-    ngos.forEach((ngo, i) => {
+    ngos.forEach((ngo, idx) => {
       totalRaised += ngo.total_raised;
       const pct = ngo.total_goal > 0 ? Math.round((ngo.total_raised / ngo.total_goal) * 100) : 0;
       const emoji = emojis[i % emojis.length];
@@ -641,7 +648,7 @@ async function loadNGOs() {
       const trust = (7.5 + Math.random() * 2.4).toFixed(1);
 
       grid.innerHTML += `
-        <div class="ngo-card">
+        <div class="ngo-card" style="animation-delay:${idx*0.1}s">
           <div style="position:relative">
             <div class="ngo-img-placeholder ${grad}">${emoji}</div>
             <div class="trust-badge">${trust} / 10</div>
