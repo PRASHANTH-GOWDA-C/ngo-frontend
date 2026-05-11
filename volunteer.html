@@ -134,6 +134,79 @@
   .theme-toggle{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
   .theme-toggle:hover{border-color:var(--primary);transform:scale(1.1);}
 
+
+  /* ── FLEXFOLIO-STYLE ANIMATIONS ── */
+  @keyframes fx-fade-up {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fx-fade-down {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fx-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes fx-scale-in {
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes fx-slide-left {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes fx-slide-right {
+    from { opacity: 0; transform: translateX(-40px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Scroll-reveal base state */
+  .fx { opacity: 0; }
+  .fx.fx-visible {
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-duration: 0.7s;
+  }
+  .fx-up.fx-visible    { animation-name: fx-fade-up; }
+  .fx-down.fx-visible  { animation-name: fx-fade-down; }
+  .fx-in.fx-visible    { animation-name: fx-fade-in; }
+  .fx-scale.fx-visible { animation-name: fx-scale-in; }
+  .fx-left.fx-visible  { animation-name: fx-slide-left; }
+  .fx-right.fx-visible { animation-name: fx-slide-right; }
+
+  /* Stagger delays */
+  .fx-d1.fx-visible { animation-delay: 0.05s; }
+  .fx-d2.fx-visible { animation-delay: 0.12s; }
+  .fx-d3.fx-visible { animation-delay: 0.19s; }
+  .fx-d4.fx-visible { animation-delay: 0.26s; }
+  .fx-d5.fx-visible { animation-delay: 0.33s; }
+  .fx-d6.fx-visible { animation-delay: 0.40s; }
+
+  /* Card hover lift */
+  .fx-hover {
+    transition: transform 0.25s cubic-bezier(0.22,1,0.36,1),
+                box-shadow 0.25s cubic-bezier(0.22,1,0.36,1) !important;
+  }
+  .fx-hover:hover {
+    transform: translateY(-6px) scale(1.012) !important;
+    box-shadow: 0 20px 48px rgba(0,0,0,0.22) !important;
+  }
+
+  /* Page entrance fade */
+  body { animation: fx-fade-in 0.45s ease both; }
+
+  /* Nav slide down */
+  nav { animation: fx-fade-down 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+
+  /* Button press */
+  button, .btn, .donate-btn, .view-btn, .rec-donate-btn {
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  }
+  button:active, .btn:active {
+    transform: scale(0.96) !important;
+  }
+
 </style>
 </head>
 <body>
@@ -346,6 +419,59 @@ window.addEventListener('DOMContentLoaded',function(){
   var btn = document.getElementById('theme-btn');
   if(btn) btn.textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
 });
+</script>
+
+
+<script>
+// ── Flexfolio-style scroll reveal ──
+(function(){
+  // Add fx classes to common elements automatically
+  const selectors = [
+    { sel: '.ngo-card, .campaign-card, .card, .stat-card, .team-card, .event-card', cls: 'fx fx-up fx-hover' },
+    { sel: '.hero h1, .hero-title, h1', cls: 'fx fx-up fx-d1' },
+    { sel: '.hero p, .hero-sub', cls: 'fx fx-up fx-d2' },
+    { sel: '.hero-actions, .hero-badge, .hero-badge-wrap', cls: 'fx fx-up fx-d3' },
+    { sel: '.section-header h2, .section-header', cls: 'fx fx-up' },
+    { sel: '.section-header p', cls: 'fx fx-up fx-d1' },
+    { sel: '.stat-item', cls: 'fx fx-scale' },
+    { sel: '.float-card', cls: 'fx fx-scale' },
+    { sel: '.form-group, .input-group', cls: 'fx fx-up' },
+    { sel: '.table-wrap', cls: 'fx fx-up' },
+    { sel: '.submit-btn, .donate-btn', cls: 'fx fx-scale' },
+    { sel: 'footer', cls: 'fx fx-up' },
+  ];
+
+  selectors.forEach(({ sel, cls }) => {
+    document.querySelectorAll(sel).forEach((el, i) => {
+      cls.split(' ').forEach(c => { if(c) el.classList.add(c); });
+      // Stagger cards
+      if (sel.includes('card') || sel.includes('stat-item')) {
+        el.classList.add('fx-d' + Math.min(i % 6 + 1, 6));
+      }
+    });
+  });
+
+  // IntersectionObserver for scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fx-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fx').forEach(el => observer.observe(el));
+
+  // Re-run for dynamically added cards (after API loads)
+  const mutObs = new MutationObserver(() => {
+    document.querySelectorAll('.ngo-card:not(.fx), .campaign-card:not(.fx), .card:not(.fx), .event-card:not(.fx)').forEach((el, i) => {
+      el.classList.add('fx', 'fx-up', 'fx-hover', 'fx-d' + Math.min(i % 6 + 1, 6));
+      observer.observe(el);
+    });
+  });
+  mutObs.observe(document.body, { childList: true, subtree: true });
+})();
 </script>
 
 </body>
