@@ -149,6 +149,52 @@
     box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
   }
 
+
+/* ===== UPREACH-STYLE SCROLL ANIMATIONS ===== */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1);
+}
+.scroll-reveal.revealed { opacity: 1; transform: translateY(0); }
+.scroll-reveal-left {
+  opacity: 0; transform: translateX(-36px);
+  transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1);
+}
+.scroll-reveal-left.revealed { opacity: 1; transform: translateX(0); }
+.scroll-reveal-right {
+  opacity: 0; transform: translateX(36px);
+  transition: opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1);
+}
+.scroll-reveal-right.revealed { opacity: 1; transform: translateX(0); }
+.scroll-stagger > * {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.55s cubic-bezier(0.22,1,0.36,1), transform 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+.scroll-stagger.revealed > *:nth-child(1){opacity:1;transform:translateY(0);transition-delay:0s}
+.scroll-stagger.revealed > *:nth-child(2){opacity:1;transform:translateY(0);transition-delay:0.09s}
+.scroll-stagger.revealed > *:nth-child(3){opacity:1;transform:translateY(0);transition-delay:0.18s}
+.scroll-stagger.revealed > *:nth-child(4){opacity:1;transform:translateY(0);transition-delay:0.27s}
+.scroll-stagger.revealed > *:nth-child(5){opacity:1;transform:translateY(0);transition-delay:0.36s}
+.scroll-stagger.revealed > *:nth-child(6){opacity:1;transform:translateY(0);transition-delay:0.44s}
+
+  .nav-actions { display: flex; gap: 12px; align-items: center; }
+  .btn {
+    padding: 10px 20px;
+    border-radius: var(--radius-sm, 0.5rem);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-primary { background: var(--primary); color: #003824; }
+  .btn-primary:hover { background: #6ffbbe; }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+  body.light .btn-primary { background: #10B981; color: #fff; }
+  body.light .btn-primary:hover { background: #059669; }
 </style>
 </head>
 <body>
@@ -161,12 +207,15 @@
     <li><a href="volunteer.html" class="active">Volunteer</a></li>
     <li><a href="dashboard.html">Dashboard</a></li>
   </ul>
-  <button class="btn-outline" onclick="window.location='donate.html'">Donate Now</button>
-  <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle light/dark mode">🌙</button>
+  <div class="nav-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Toggle light/dark mode">🌙</button>
+    <a href="donate.html"><button class="btn btn-primary">Donate Now</button></a>
+    <button class="btn" style="background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:10px 20px;border-radius:var(--radius-sm,0.5rem);font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'" onclick="localStorage.clear();window.location='login.html'">Logout</button>
+  </div>
 </nav>
 
 <!-- HERO SPLIT -->
-<div class="hero-split">
+<div class="hero-split scroll-reveal">
   <div class="hero-left">
     <div class="overline">Join The Movement</div>
     <h1>Amplify Global Impact Through Action</h1>
@@ -214,7 +263,7 @@
 
 <!-- STATS -->
 <div class="stats-bar">
-  <div class="stats-inner">
+  <div class="stats-inner scroll-stagger">
     <div class="stat-item"><div class="stat-value">240k</div><div class="stat-label">Hours Logged</div></div>
     <div class="stat-item"><div class="stat-value">150+</div><div class="stat-label">Global NGOs</div></div>
     <div class="stat-item"><div class="stat-value">12M</div><div class="stat-label">Lives Impacted</div></div>
@@ -231,7 +280,7 @@
     </div>
     <div class="view-all">View All Events →</div>
   </div>
-  <div class="events-grid" id="events-grid">
+  <div class="events-grid scroll-stagger" id="events-grid">
     <!-- loaded by JS -->
   </div>
 </div>
@@ -364,89 +413,65 @@ window.addEventListener('DOMContentLoaded',function(){
 </script>
 
 
+
+
+<style>
+/* PAGE TRANSITION */
+.page-transition-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg, #0e1511);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+</style>
+
+<div class="page-transition-overlay" id="page-overlay"></div>
+
 <script>
-// ── Framer-style scroll-triggered spring animations ──────────────────────
-(function(){
-  const SPRING_CSS = `
-    @keyframes springIn {
-      0%   { opacity:0; transform: translateY(32px) scale(0.97); }
-      55%  { opacity:1; transform: translateY(-5px) scale(1.01); }
-      75%  { transform: translateY(3px) scale(0.995); }
-      100% { opacity:1; transform: translateY(0) scale(1); }
-    }
-    @keyframes springInLeft {
-      0%   { opacity:0; transform: translateX(-40px); }
-      60%  { opacity:1; transform: translateX(6px); }
-      100% { opacity:1; transform: translateX(0); }
-    }
-    @keyframes springInRight {
-      0%   { opacity:0; transform: translateX(40px); }
-      60%  { opacity:1; transform: translateX(-6px); }
-      100% { opacity:1; transform: translateX(0); }
-    }
-    .spring-hidden { opacity:0; }
-    .spring-animate {
-      animation: springIn 0.65s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    .spring-animate-left {
-      animation: springInLeft 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-    .spring-animate-right {
-      animation: springInRight 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
-    }
-  `;
-  const style = document.createElement('style');
-  style.textContent = SPRING_CSS;
-  document.head.appendChild(style);
-
-  // Selectors to animate on scroll
-  const SELECTORS = [
-    '.ngo-card','[class*="card"]','[class*="section-header"]',
-    '[class*="stat-item"]','[class*="stat-card"]','[class*="section"] h2',
-    '[class*="hero"] h1','[class*="hero"] p','[class*="hero-badge"]',
-    '[class*="hero-actions"]','[class*="float-card"]','[class*="campaign"]',
-    'table','[class*="table-wrap"]','[class*="form-group"]',
-    '[class*="event-card"]','[class*="volunteer"]',
-    '[class*="rec-card"]','[class*="donate"]', 'footer',
-    '[class*="ngo-grid"]','[class*="stats-row"]'
-  ].join(',');
-
-  function initSpring(){
-    const seen = new WeakSet();
-    const items = document.querySelectorAll(SELECTORS);
-    items.forEach((el, i) => {
-      if(seen.has(el)) return;
-      seen.add(el);
-      // skip nav and elements already animated
-      if(el.closest('nav') || el.closest('footer') && el.tagName === 'NAV') return;
-      el.classList.add('spring-hidden');
-    });
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if(entry.isIntersecting){
-          const el = entry.target;
-          const siblings = [...(el.parentElement?.children || [])];
-          const idx = siblings.indexOf(el);
-          const delay = Math.min(idx * 0.07, 0.5);
-          el.style.animationDelay = delay + 's';
-          el.classList.remove('spring-hidden');
-          el.classList.add('spring-animate');
-          observer.unobserve(el);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-
-    document.querySelectorAll('.spring-hidden').forEach(el => observer.observe(el));
-  }
-
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', initSpring);
-  } else {
-    initSpring();
+(function() {
+  // Simple fade transition — no green flash
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a[href]');
+    if (!link) return;
+    var href = link.getAttribute('href');
+    if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto') || href.includes('github')) return;
+    e.preventDefault();
+    document.body.style.transition = 'opacity 0.22s ease';
+    document.body.style.opacity = '0';
+    setTimeout(function() { window.location.href = href; }, 230);
+  });
+  // Fade in on load
+  document.body.style.opacity = '0';
+  window.addEventListener('DOMContentLoaded', function() {
+    document.body.style.transition = 'opacity 0.3s ease';
+    document.body.style.opacity = '1';
+  });
+  if (document.readyState !== 'loading') {
+    document.body.style.transition = 'opacity 0.3s ease';
+    document.body.style.opacity = '1';
   }
 })();
 </script>
 
+
+<script>
+(function() {
+  function initScrollReveal() {
+    var els = document.querySelectorAll('.scroll-reveal, .scroll-reveal-left, .scroll-reveal-right, .scroll-stagger');
+    if (!els.length) return;
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) { entry.target.classList.add('revealed'); observer.unobserve(entry.target); }
+      });
+    }, { threshold: 0.10, rootMargin: '0px 0px -40px 0px' });
+    els.forEach(function(el) { observer.observe(el); });
+  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initScrollReveal); }
+  else { initScrollReveal(); setTimeout(initScrollReveal, 900); setTimeout(initScrollReveal, 2200); }
+})();
+</script>
 </body>
 </html>
