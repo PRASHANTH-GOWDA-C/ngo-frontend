@@ -239,7 +239,7 @@
   </div>
 </div>
 
-<footer>
+<footer data-anim>
   <div class="logo">✦ <span>Lumina</span>NGO</div>
   <div class="footer-copy">© 2025 LuminaNGO. Radical transparency in global philanthropy.</div>
   <div class="footer-links">
@@ -373,6 +373,167 @@ window.addEventListener('DOMContentLoaded',function(){
   var btn = document.getElementById('theme-btn');
   if(btn) btn.textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
 });
+</script>
+
+
+<!-- PREMIUM ANIMATIONS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+/* Page transition overlay */
+.page-transition{position:fixed;inset:0;background:var(--bg,#0e1511);z-index:9999;pointer-events:none;opacity:0}
+/* Animate-in base state */
+[data-anim]{opacity:0;transform:translateY(32px)}
+[data-anim-left]{opacity:0;transform:translateX(-40px)}
+[data-anim-right]{opacity:0;transform:translateX(40px)}
+[data-anim-scale]{opacity:0;transform:scale(0.88)}
+/* Card hover spring */
+.card:not(.no-spring),.ngo-card,.rec-card,.event-card,.campaign-mini,.stat-card{
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.3s ease,border-color 0.25s ease!important;
+}
+/* Smooth scroll */
+html{scroll-behavior:smooth}
+/* Stagger children */
+.anim-children>*{opacity:0;transform:translateY(24px)}
+</style>
+<div class="page-transition" id="page-transition"></div>
+<script>
+(function(){
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Page fade IN on load
+  gsap.to('#page-transition',{opacity:0,duration:0.5,ease:'power2.out',delay:0.05});
+
+  // Page fade OUT on link click
+  document.querySelectorAll('a[href]').forEach(link=>{
+    const href=link.getAttribute('href');
+    if(!href||href.startsWith('#')||href.startsWith('http')||href.startsWith('javascript')) return;
+    link.addEventListener('click',function(e){
+      e.preventDefault();
+      const target=this.getAttribute('href');
+      gsap.to('#page-transition',{opacity:1,duration:0.35,ease:'power2.in',onComplete:()=>{window.location=target}});
+    });
+  });
+
+  // Scroll-triggered fade up
+  document.querySelectorAll('[data-anim]').forEach((el,i)=>{
+    gsap.to(el,{
+      opacity:1,y:0,duration:0.7,ease:'power3.out',
+      scrollTrigger:{trigger:el,start:'top 88%',toggleActions:'play none none none'},
+      delay: (el.dataset.delay||0)
+    });
+  });
+
+  // Scroll-triggered slide left
+  document.querySelectorAll('[data-anim-left]').forEach(el=>{
+    gsap.to(el,{opacity:1,x:0,duration:0.7,ease:'power3.out',
+      scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+
+  // Scroll-triggered slide right
+  document.querySelectorAll('[data-anim-right]').forEach(el=>{
+    gsap.to(el,{opacity:1,x:0,duration:0.7,ease:'power3.out',
+      scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+
+  // Scale up
+  document.querySelectorAll('[data-anim-scale]').forEach(el=>{
+    gsap.to(el,{opacity:1,scale:1,duration:0.6,ease:'back.out(1.4)',
+      scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+
+  // Staggered children
+  document.querySelectorAll('.anim-children').forEach(parent=>{
+    const children=parent.children;
+    gsap.to(children,{
+      opacity:1,y:0,duration:0.55,ease:'power3.out',stagger:0.08,
+      scrollTrigger:{trigger:parent,start:'top 85%'}
+    });
+  });
+
+  // Hero elements on index/volunteer/donate — immediate stagger
+  const heroEls=document.querySelectorAll('.hero-badge,.hero h1,.hero p,.hero-actions,.hero-left .overline,.hero-left h1,.hero-left p,.hero-left .active-row,.form-card,.form-panel');
+  gsap.fromTo(heroEls,
+    {opacity:0,y:28},
+    {opacity:1,y:0,duration:0.65,ease:'power3.out',stagger:0.1,delay:0.3}
+  );
+
+  // Nav fade in
+  gsap.fromTo('nav',{opacity:0,y:-20},{opacity:1,y:0,duration:0.5,ease:'power2.out',delay:0.1});
+
+  // Stats row counter animation
+  document.querySelectorAll('.stat-value,.stat-card-value,.raised-value').forEach(el=>{
+    const text=el.textContent;
+    const num=parseFloat(text.replace(/[^0-9.]/g,''));
+    if(!num||isNaN(num)) return;
+    const prefix=text.match(/^[^0-9]*/)?.[0]||'';
+    const suffix=text.match(/[^0-9.]+$/)?.[0]||'';
+    ScrollTrigger.create({
+      trigger:el,start:'top 90%',
+      onEnter:()=>{
+        gsap.fromTo({val:0},{val:num},{
+          duration:1.4,ease:'power2.out',
+          onUpdate:function(){
+            el.textContent=prefix+Math.round(this.targets()[0].val).toLocaleString('en-IN')+suffix;
+          }
+        });
+      }
+    });
+  });
+
+  // Card hover spring
+  document.querySelectorAll('.ngo-card,.campaign-grid .card,.rec-card,.event-card,.stat-card,.stat-card-icon,.funding-card').forEach(card=>{
+    card.addEventListener('mouseenter',()=>{
+      gsap.to(card,{y:-6,scale:1.015,duration:0.4,ease:'back.out(2)'});
+    });
+    card.addEventListener('mouseleave',()=>{
+      gsap.to(card,{y:0,scale:1,duration:0.35,ease:'power2.out'});
+    });
+  });
+
+  // Button pulse on hover
+  document.querySelectorAll('.btn-primary,.submit-btn,.donate-btn,.create-btn,.modal-submit').forEach(btn=>{
+    btn.addEventListener('mouseenter',()=>gsap.to(btn,{scale:1.04,duration:0.2,ease:'power2.out'}));
+    btn.addEventListener('mouseleave',()=>gsap.to(btn,{scale:1,duration:0.2,ease:'power2.in'}));
+  });
+
+  // Sidebar items slide in on ngo-dashboard
+  document.querySelectorAll('.sidebar-item').forEach((el,i)=>{
+    gsap.fromTo(el,{opacity:0,x:-20},{opacity:1,x:0,duration:0.4,ease:'power2.out',delay:0.2+i*0.07});
+  });
+
+  // Table rows stagger in
+  document.querySelectorAll('tbody tr').forEach((row,i)=>{
+    gsap.fromTo(row,{opacity:0,x:-10},{opacity:1,x:0,duration:0.35,ease:'power2.out',delay:0.5+i*0.06});
+  });
+
+  // Form fields slide in
+  document.querySelectorAll('.field').forEach((f,i)=>{
+    gsap.fromTo(f,{opacity:0,y:16},{opacity:1,y:0,duration:0.4,ease:'power2.out',delay:0.4+i*0.07});
+  });
+
+  // Progress bars animate width on scroll
+  document.querySelectorAll('.progress-fill,.prog-fill,.mini-prog-fill,.rec-fill').forEach(bar=>{
+    const target=bar.style.width||bar.dataset.w||'0%';
+    bar.style.width='0%';
+    ScrollTrigger.create({
+      trigger:bar,start:'top 92%',
+      onEnter:()=>{gsap.to(bar,{width:target,duration:1.2,ease:'power2.out',delay:0.1});}
+    });
+  });
+
+  // Floating orb pulse (index hero)
+  const orb=document.querySelector('.hero-orb,.orb');
+  if(orb){
+    gsap.to(orb,{scale:1.08,duration:3,ease:'sine.inOut',yoyo:true,repeat:-1});
+  }
+
+  // Floating stat cards (index)
+  document.querySelectorAll('.float-card').forEach((card,i)=>{
+    gsap.to(card,{y:i%2===0?-10:10,duration:2.5+i*0.3,ease:'sine.inOut',yoyo:true,repeat:-1,delay:i*0.4});
+  });
+
+})();
 </script>
 
 </body>
