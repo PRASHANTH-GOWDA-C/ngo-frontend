@@ -323,7 +323,7 @@ function renderTable(donations){
     return;
   }
   tbody.innerHTML = donations.map((d,i)=>{
-    const statuses = ['completed','completed','processing'];
+    const statuses = ['completed','completed'];
     const status = statuses[i%statuses.length];
     return `<tr>
       <td class="td-date">${formatDate(d.donated_at||new Date())}</td>
